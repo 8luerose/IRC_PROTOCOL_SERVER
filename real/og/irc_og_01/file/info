@@ -1,0 +1,23 @@
+# $SERVER_NAME = the name of the IRC Server
+# $TIME_COMPILATION = the date when the IRC Server has been compiled
+# $TIME_START = the date when the IRC Server has been launch
+# $SERVER_VERSION = is the actual version of the IRC Server
+
+-------------INFO-------------
+ Server name : $SERVER_NAME
+ $SERVER_NAME compiled on $TIME_COMPILATION
+ $SERVER_NAME started on $TIME_START
+ Projet : ft_irc 42
+ Version : beta $SERVER_VERSION
+ Created by :
+  - lmoulin  <lmoulin@student.42.fr>
+  - jvaquer  <jvaquer@student.42.fr>
+  - avan-pra <avan-pra@student.42.fr>
+
+ We explain how we build it on our website at :
+  - https://ircgod.com
+
+ You can check our other project at :
+  - https://github.com/lucasmln
+  - https://github.com/EudaldV98
+  - https://github.com/avan-pra
