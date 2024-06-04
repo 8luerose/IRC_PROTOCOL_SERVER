@@ -43,14 +43,31 @@ void KQueueEchoClient::connect_to_server() {
 void KQueueEchoClient::run() {
     connect_to_server();
 
-    std::string message;
-    std::cout << "Enter a message: ";
-    std::getline(std::cin, message);
+    // std::string message;
+    // std::cout << "Enter a message: ";
+    // std::getline(std::cin, message);
 
-    write(client_socket, message.c_str(), message.size());
-    char buffer[1024] = {0};
-    read(client_socket, buffer, sizeof(buffer));
-    std::cout << "Server echoed: " << buffer << std::endl;
+    // write(client_socket, message.c_str(), message.size());
+    // char buffer[1024] = {0};
+    // read(client_socket, buffer, sizeof(buffer));
+    // std::cout << "Server echoed: " << buffer << std::endl;
+
+	while (true) { // 입력을 계속 받기 위해 무한 루프 사용
+        std::string message;
+        std::cout << "Enter a message: ";
+        std::getline(std::cin, message);
+
+        write(client_socket, message.c_str(), message.size());
+        char buffer[1024] = {0};
+        int bytes_read = read(client_socket, buffer, sizeof(buffer) - 1);
+        if (bytes_read > 0) {
+            buffer[bytes_read] = '\0'; // null-terminate the buffer
+            std::cout << "Server echoed: " << buffer << std::endl;
+        } else {
+            std::cout << "Disconnected from server." << std::endl;
+            break;
+        }
+    }
 }
 
 int main() {
