@@ -1,0 +1,7 @@
+services:
+  nc:
+    build: .
+    container_name: nc
+    ports:
+      - "6667:6667"
+    tty: true
