@@ -61,131 +61,134 @@ class Client;
 // Exception base class
 class IRCException : public std::exception
 {
-public:
-	IRCException(const std::string &message) : message_(message) {}
-	virtual const char *what() const throw() { return message_.c_str(); }
+	private:
+		std::string _message;
 
-private:
-	std::string message_;
+	public:
+		IRCException(const std::string &message) : _message(message) {}
+		virtual const char *what() const throw()
+		{
+			return (_message.c_str());
+		}
 };
 
 /* nosuch error */
 class NoSuchNickException : public IRCException
 {
-public:
-	NoSuchNickException(const std::string &nickname)
-		: IRCException("401 :" + nickname + " :" + ERR_NOSUCHNICK) {}
+	public:
+		NoSuchNickException(const std::string &nickname)
+			: IRCException("401 :" + nickname + " :" + ERR_NOSUCHNICK) {}
 };
 
 class NoSuchChannelException : public IRCException
 {
-public:
-	NoSuchChannelException(const std::string &channel)
-		: IRCException("403 :" + channel + " :" + ERR_NOSUCHCHANNEL) {}
+	public:
+		NoSuchChannelException(const std::string &channel)
+			: IRCException("403 :" + channel + " :" + ERR_NOSUCHCHANNEL) {}
 };
 
 /* channel error */
 class UserNotInChannelException : public IRCException
 {
-public:
-	UserNotInChannelException(const std::string &nickname, const std::string &channel)
-		: IRCException("441 :" + nickname + " " + channel + " :" + ERR_USERNOTINCHANNEL) {}
+	public:
+		UserNotInChannelException(const std::string &nickname, const std::string &channel)
+			: IRCException("441 :" + nickname + " " + channel + " :" + ERR_USERNOTINCHANNEL) {}
 };
 
 class NotOnChannelException : public IRCException
 {
-public:
-	NotOnChannelException(const std::string &channel)
-		: IRCException("442 :" + channel + " :" + ERR_NOTONCHANNEL) {}
+	public:
+		NotOnChannelException(const std::string &channel)
+			: IRCException("442 :" + channel + " :" + ERR_NOTONCHANNEL) {}
 };
 
 class UserOnChannelException : public IRCException
 {
-public:
-	UserOnChannelException(const std::string &nickname, const std::string &channel)
-		: IRCException("443 :" + nickname + " " + channel + " :" + ERR_USERONCHANNEL) {}
+	public:
+		UserOnChannelException(const std::string &nickname, const std::string &channel)
+			: IRCException("443 :" + nickname + " " + channel + " :" + ERR_USERONCHANNEL) {}
 };
 
 /* 43* error */
 class NoNicknameGivenException : public IRCException
 {
-public:
-	NoNicknameGivenException() : IRCException("431 :" + std::string(ERR_NONICKNAMEGIVEN)) {}
+	public:
+		NoNicknameGivenException() : IRCException("431 :" + std::string(ERR_NONICKNAMEGIVEN)) {}
 };
 
 class ErroneousNicknameException : public IRCException
 {
-public:
-	ErroneousNicknameException() : IRCException("432 :" + std::string(ERR_ERRONEUSNICKNAME)) {}
+	public:
+		ErroneousNicknameException() : IRCException("432 :" + std::string(ERR_ERRONEUSNICKNAME)) {}
 };
 
 class NicknameInUseException : public IRCException
 {
-public:
-	NicknameInUseException() : IRCException("433 :" + std::string(ERR_NICKNAMEINUSE)) {}
+	public:
+		NicknameInUseException() : IRCException("433 :" + std::string(ERR_NICKNAMEINUSE)) {}
 };
 
 /* 45* error */
 class NotRegisteredException : public IRCException
 {
-public:
-	NotRegisteredException() : IRCException("451 :" + std::string(ERR_NOTREGISTERED)) {}
+	public:
+		NotRegisteredException() : IRCException("451 :" + std::string(ERR_NOTREGISTERED)) {}
 };
 
 /* 46* error */
 class NeedMoreParamsException : public IRCException
 {
-public:
-	NeedMoreParamsException() : IRCException("461 :" + std::string(ERR_NEEDMOREPARAMS)) {}
+	public:
+		NeedMoreParamsException() : IRCException("461 :" + std::string(ERR_NEEDMOREPARAMS)) {}
 };
 
 class AlreadyRegisteredException : public IRCException
 {
-public:
-	AlreadyRegisteredException() : IRCException("462 :" + std::string(ERR_ALREADYREGISTRED)) {}
+	public:
+		AlreadyRegisteredException() : IRCException("462 :" + std::string(ERR_ALREADYREGISTRED)) {}
 };
 
 class PasswdMismatchException : public IRCException
 {
-public:
-	PasswdMismatchException() : IRCException("464 :" + std::string(ERR_PASSWDMISMATCH)) {}
+	public:
+		PasswdMismatchException() : IRCException("464 :" + std::string(ERR_PASSWDMISMATCH)) {}
 };
 
 /* mode 47* error */
 class ChannelIsFullException : public IRCException
 {
-public:
-	ChannelIsFullException(const std::string &channel)
-		: IRCException("471 :" + channel + " :" + ERR_CHANNELISFULL) {}
+	public:
+		ChannelIsFullException(const std::string &channel)
+			: IRCException("471 :" + channel + " :" + ERR_CHANNELISFULL) {}
 };
 
 class UnknownModeException : public IRCException
 {
-public:
-	UnknownModeException(char mode)
-		: IRCException("472 :" + std::string(1, mode) + " :" + ERR_UNKNOWNMODE) {}
+	public:
+		UnknownModeException(char mode)
+			: IRCException("472 :" + std::string(1, mode) + " :" + ERR_UNKNOWNMODE) {}
 };
 
 class InviteOnlyChanException : public IRCException
 {
-public:
-	InviteOnlyChanException(const std::string &channel)
-		: IRCException("473 :" + channel + " :" + ERR_INVITEONLYCHAN) {}
+	public:
+		InviteOnlyChanException(const std::string &channel)
+			: IRCException("473 :" + channel + " :" + ERR_INVITEONLYCHAN) {}
 };
 
 class BadChannelKeyException : public IRCException
 {
-public:
-	BadChannelKeyException(const std::string &channel)
-		: IRCException("475 :" + channel + " :" + ERR_BADCHANNELKEY) {}
+	public:
+		BadChannelKeyException(const std::string &channel)
+			: IRCException("475 :" + channel + " :" + ERR_BADCHANNELKEY) {}
 };
 
 /* 48* error */
 class ChanOpPrivsNeededException : public IRCException
 {
-public:
-	ChanOpPrivsNeededException(const std::string &channel)
-		: IRCException("482 :" + channel + " :" + ERR_CHANOPRIVSNEEDED) {}
+	public:
+		ChanOpPrivsNeededException(const std::string &channel)
+			: IRCException("482 :" + channel + " :" + ERR_CHANOPRIVSNEEDED) {}
 };
 
 #endif

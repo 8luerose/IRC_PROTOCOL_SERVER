@@ -1,21 +1,11 @@
-// #ifndef COMMAND_HPP
-// #define COMMAND_HPP
-
-// #include "Main.hpp"
-
-
-// #endif // COMMAND_HPP
-
-
 #ifndef COMMAND_HPP
 # define COMMAND_HPP
 
 # include "../includes/Main.hpp"
 # include "../includes/Client.hpp"
 # include "../includes/Server.hpp"
-// # include "./Client.hpp"
-// # include "./Channel.hpp"
-// # include "./Error.hpp"
+# include "../includes/Util.hpp"
+# include "../includes/Error.hpp"
 
 class Client;
 class Server;
