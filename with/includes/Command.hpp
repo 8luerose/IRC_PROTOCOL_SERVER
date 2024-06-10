@@ -11,6 +11,7 @@
 # define COMMAND_HPP
 
 # include "../includes/Main.hpp"
+# include "../includes/Client.hpp"
 # include "../includes/Server.hpp"
 // # include "./Client.hpp"
 // # include "./Channel.hpp"
@@ -38,6 +39,9 @@ class Command
 		~Command();
 
 		void		run(int);
+		void		signUp(int, std::map<int, Client>::iterator, std::vector<std::string>&, std::map<int, Client>&);
+		void		notRegister(int, std::map<int, Client>::iterator, std::map<int, Client>&);
+		void		signIn(int, std::vector<std::string>&);
 		void		pass(int, std::vector<std::string>);
 		void		nick(int, std::vector<std::string>);
 		void		user(int, std::vector<std::string>);
