@@ -4,7 +4,7 @@
 #include "main.hpp"
 #include "Command.hpp"
 
-std::vector<std::string>	split(std::string str, char delim);
 bool						isSpecialChar(char c);
+std::vector<std::string>	split(std::string str, char delim);
 
 #endif

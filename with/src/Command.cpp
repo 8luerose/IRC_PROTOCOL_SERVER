@@ -14,7 +14,7 @@ void Command::run(int fd)
 	std::string						cmdBuffer;
 	std::vector<std::string>		cmdVector;
 	std::map<int, Client>::iterator	iter;		// clients를 순회하기 위한 iterator
-	std::map<int, Client>& clientList = _server.getClients();	// 서버에 저장된 client 목록
+	std::map<int, Client>& clientList = _server.getClientList();	// 서버에 저장된 client 목록
 
 	serverMsg << _server.getMessage(fd);
 	while (getline(serverMsg, cmdBuffer, ' ')) // 명령어 파싱
@@ -61,7 +61,7 @@ void Command::signUp(int fd, std::map<int, Client>::iterator iter, std::vector<s
 	if (iter != clientList.end())
 	{
 		if (iter->second.getIsRegist())
-			iter->second.appendClientRecvBuf(":IRC 001 " + iter->second.getNickname() + " :Welcome to the Interget Relay Network " + iter->second.getNickname() + "!" + iter->second.getUsername() + "@" + iter->second.getHostname() + "\r\n");
+			iter->second.appendReciveBuf(":IRC 001 " + iter->second.getNickname() + " :Welcome to the Interget Relay Network " + iter->second.getNickname() + "!" + iter->second.getUsername() + "@" + iter->second.getHostname() + "\r\n");
 	}
 }
 
@@ -70,10 +70,10 @@ void Command::notRegister(int fd, std::map<int, Client>::iterator iter, std::map
 	// ERR_NOTREGISTERED (451):
 	// ex) ":server_name 451 <nickname> :You have not registered"
 
-	iter->second.appendClientRecvBuf(iter->second.getNickname() + " :");
-	iter->second.appendClientRecvBuf(ERR_NOTREGISTERED);
-	send(fd, iter->second.getClientRecvBuf().c_str(), iter->second.getClientRecvBuf().length(), 0);
-	iter->second.clearClient();
+	iter->second.appendReciveBuf(iter->second.getNickname() + " :");
+	iter->second.appendReciveBuf(ERR_NOTREGISTERED);
+	send(fd, iter->second.getReciveBuf().c_str(), iter->second.getReciveBuf().length(), 0);
+	iter->second.resetClient();
 	clientList.erase(fd);
 	close(fd);
 

@@ -47,17 +47,34 @@ class Command
 		// utils in commands/
 		void		botCommand(int, std::vector<std::string>);
 		void		topicMsg(int, std::string);
-		bool		checkNicknameDuplicate(std::string, std::map<int, Client>&);
-		bool		checkNicknameValidate(std::string);
+		// bool		checkNicknameDuplicate(std::string, std::map<int, Client>&);
+		bool		nicknameDuplicate(std::string, std::map<int, Client>&);
+		// bool		checkNicknameValidate(std::string);
+		bool		nickNameValidate(std::string);
 		bool		checkRealname(std::string);
 		bool		checkBotCommand(std::string);
 		// utils in Util.cpp
 		std::string	channelMessage(int, std::vector<std::string>);
 		void		channelPRIVMSG(std::string, Client&, Channel*);
 		void		channelPART(int, std::string, std::vector<std::string>);
-		void		msgToAllChannel(int, std::string, std::string, std::string);
-		std::string	makeFullName(int);
 		void		nameListMsg(int, std::string);
+
+		std::string					makeMsgForm(int);
+		void						messageAllChannel(int, std::string, std::string, std::string);
 };
 
 #endif
+
+
+// <message>  ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
+// <prefix>   ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
+// <command>  ::= <letter> { <letter> } | <number> <number> <number>
+// <SPACE>    ::= ' ' { ' ' }
+// <params>   ::= <SPACE> [ ':' <trailing> | <middle> <params> ]
+
+// <middle>   ::= <Any *non-empty* sequence of octets not including SPACE
+//                or NUL or CR or LF, the first of which may not be ':'>
+// <trailing> ::= <Any, possibly *empty*, sequence of octets not including
+//                  NUL or CR or LF>
+
+// <crlf>     ::= CR LF

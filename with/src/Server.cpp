@@ -1,5 +1,4 @@
 #include "../includes/Server.hpp"
-#include "../includes/IRCException.hpp"
 
 /* constructor */
 // Server::Server(char *portNum, char *password)
@@ -67,13 +66,13 @@ void Server::kqueueInit()
 		throw std::runtime_error("kqueue error");
 	}
 
-    struct kevent change_event;
-    EV_SET(&change_event, _serverSock, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL); // kqueue 설정
-    _changeList.push_back(change_event);
+	changeEvent(_serverSock, READ, NULL);
+    // struct kevent change_event;
+    // EV_SET(&change_event, _serverSock, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, NULL); // kqueue 설정
+    // _changeList.push_back(change_event);
 
     if (kevent(_kq, &_changeList[0], _changeList.size(), 0, 0, NULL) == -1) 
         throw std::logic_error("ERROR :: kevent() error");
-
 }
 
 // command <option>
@@ -96,10 +95,10 @@ void Server::execute()
 		_changeList.clear();
 		for (int i = 0; i < _eventCnt; i++)
 		{
-			_curr_event = _eventList[i];
-			if (_curr_event.flags & EV_ERROR)
+			_curr_event = &_eventList[i];
+			if (_curr_event->flags & EV_ERROR)
 			{
-				if (_curr_event.ident == _serverSock)
+				if (_curr_event->ident == _serverSock)
 				{
 					// closeClient();
 					close(_serverSock);
@@ -111,19 +110,90 @@ void Server::execute()
 					// disconnectClient(_curr_event.ident);
 				}
 			}
+			else if (_curr_event->flags == EVFILT_READ)
+			{
+				if (_curr_event->ident == _serverSock)
+				{
+					int clientSock;
+					if ((clientSock = accept(_serverSock, NULL, NULL)) == -1)
+						throw acceptError();
+					std::cout << "accept new client: " << clientSock << std::endl;
+					fcntl(clientSock, F_SETFL, O_NONBLOCK);
+
+					changeEvent(clientSock, READ, NULL);
+					_clientList[clientSock] = Client(clientSock);
+				}
+				else if (_clientList.find(_curr_event->ident) != _clientList.end())
+				{
+					char buf[1024];
+					int n = recv(_curr_event->ident, buf, sizeof(buf), 0);
+
+					if (n <= 0)
+					{
+						if (n < 0)
+							std::cerr << "client read error!" << std::endl;
+						// disconnectClient(_curr_event.ident);
+					}
+					else
+					{
+						buf[n] = '\0';
+						_clientList[_curr_event->ident].appendReciveBuf(buf);
+						std::cout << "received data from " << _curr_event->ident << ": " << _clientList[_curr_event->ident].getReciveBuf() << std::endl;
+						_command.run(_curr_event->ident);
+					}
+				}
+			}
 		}
 	}
 }
 
-// void Server::inputEvent(std::vector<struct kevent> &change_list, uintptr_t ident, int16_t filter, uint16_t flags, uint32_t fflags, intptr_t data, void *udata)
-// {
-// 	struct kevent temp_event;
+void Server::changeEvent(int ident, int flag, void *udata)
+{
+	struct kevent temp_event;
+	if (flag == READ)
+		EV_SET(&temp_event, ident, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, udata);
+	else if (flag == WRITE)
+		EV_SET(&temp_event, ident, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, udata);
+	_changeList.push_back(temp_event);
+}
 
-// 	EV_SET(&temp_event, ident, filter, flags, fflags, data, udata);
-// 	this->_changeList.push_back(temp_event);
-// }
 
 /* destructor */
 Server::~Server()
 {
+}
+
+// 태현 추가
+std::map<int, Client>::iterator Server::findClient(std::string nickname)
+{
+	std::map<int, Client>::iterator iter;
+	
+	iter = _clientList.begin();
+	while (iter != _clientList.end())
+	{
+		if (iter->second.getNickname() == nickname)
+			return (iter);
+		iter++;
+	}
+	return (iter);
+}
+// 태현 추가
+std::map<int, Client> &Server::getClientList()
+{
+	return (_clientList);
+}
+
+std::map<std::string, Channel> &Server::getChannelList()
+{
+	return (_channelList);
+}
+
+Channel Server::findChannel(std::string channel_name)
+{
+	std::map<std::string, Channel>::iterator iter;
+	
+	iter = _channelList.find(channel_name);
+	if (iter != _channelList.end())
+		return (iter->second);
+	return (Channel());
 }

@@ -23,11 +23,11 @@ class Client
 
 		// OCCF
 		Client();
-		Client(const Client &);
-		Client &operator=(const Client &);
 	
 	public:
 		Client(int);
+		Client(const Client &);
+		Client &operator=(const Client &);
 		~Client();
 		std::vector<std::string>::iterator	findChannel(std::string);
 
