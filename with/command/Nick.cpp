@@ -55,9 +55,11 @@ void Command::nick(int fd, std::vector<std::string> cmdVector)
 	while (channelIter != channelList.end())
 	{
 		{
-			Channel channel = _server.findChannel(*channelIter);
-			if (channel.getChannelName() != "")
-				messageAllChannel(fd, channel.getChannelName(), "NICK", iter->second.getNickname() + " " + cmdVector[1]);
+			Channel* channel = _server.findChannel(*channelIter);
+			// if (channel->getChannelName() != "")
+			// 	messageAllChannel(fd, channel->getChannelName(), "NICK", iter->second.getNickname() + " " + cmdVector[1]);
+			if (channel != NULL)
+				messageAllChannel(fd, channel->getChannelName(), "NICK", iter->second.getNickname() + " " + cmdVector[1]);
 		}	// '}' 스코프 작성 시, Channel() 임의 객체를 스코프 범위내에서 생성 후 소멸시킴
 		channelIter++;
 	}

@@ -188,12 +188,22 @@ std::map<std::string, Channel> &Server::getChannelList()
 	return (_channelList);
 }
 
-Channel Server::findChannel(std::string channel_name)
+// Channel Server::findChannel(std::string channel_name)
+// {
+// 	std::map<std::string, Channel>::iterator iter;
+	
+// 	iter = _channelList.find(channel_name);
+// 	if (iter != _channelList.end())
+// 		return (iter->second);
+// 	return (Channel());
+// }
+
+Channel* Server::findChannel(std::string channel_name)
 {
 	std::map<std::string, Channel>::iterator iter;
 	
 	iter = _channelList.find(channel_name);
 	if (iter != _channelList.end())
-		return (iter->second);
-	return (Channel());
+		return (&(iter->second));
+	return (NULL);
 }

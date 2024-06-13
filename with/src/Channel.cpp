@@ -86,6 +86,11 @@ unsigned int Channel::getLimit()
     return (_limit);
 }
 
+std::string Channel::getKey()
+{
+	return (_key);
+}
+
 std::string Channel::getTopic()
 {
     return (_topic);
@@ -108,7 +113,7 @@ void Channel::setChannelName(std::string &channelName)
     _channelName = channelName;
 }
 
-void Channel::setMode(unsigned char mode, char sign)
+void Channel::setMode(unsigned char mode, char sign, int fd)
 {
 	if (mode == 'i')
 	{
@@ -138,6 +143,22 @@ void Channel::setMode(unsigned char mode, char sign)
 		else if (sign == '-')
 			_keyStatus = false;
 	}
+	else if (mode == 'o')
+    {
+        setOperator(fd, sign);
+    }
+}
+
+void Channel::setOperator(int fd, char sign)
+{
+    if (sign == '+')
+    {
+        addOperatorFd(fd);
+    }
+    else if (sign == '-')
+    {
+        removeOperatorFd(fd);
+    }
 }
 
 void Channel::setLimit(unsigned int limit)

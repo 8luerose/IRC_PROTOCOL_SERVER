@@ -40,7 +40,9 @@ std::string Command::makeMsgForm(int fd)
 }
 
 void Command::messageAllChannel(int fd, std::string channelName, std::string command, std::string message)
-{
+{	// 채널 전체에 귓속말, PRIVMSG 중에서 reciver -> channel인 경우
+	// 다만 자신에게는 PRIVMSG 내용이 출력되지 않음
+	// 입력 인자는, /PRIVMSG #channel :message
 	std::map<std::string, Channel>& channelList = _server.getChannelList();
 
 	if (channelList.find(channelName) == channelList.end())

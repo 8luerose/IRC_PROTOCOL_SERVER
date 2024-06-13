@@ -36,12 +36,14 @@ class Channel
 		std::string                 getMode();
 		std::string                 getTopic();
 		unsigned int                getLimit();
+		std::string                 getKey();
 		std::vector<int>::iterator  findIterClient(int);
 		// Bot*                        getBot();
 
 		// setters
 		void                        setChannelName(std::string&);
-		void						setMode(unsigned char, char);
+		// void						setMode(unsigned char, char);	// 구버전
+		void                        setMode(unsigned char, char, int);	//fd 있는 버전
 		void                        setLimit(unsigned int);
 		void                        setTopic(std::string);
 		void                        setKey(std::string);
@@ -50,6 +52,7 @@ class Channel
 		void                        addOperatorFd(int);
 		void                        removeOperatorFd(int);
 		void                        appendFdListInvite(int);
+		void						setOperator(int, char);
 
 		// diff
 		bool						diffMode(unsigned char);
