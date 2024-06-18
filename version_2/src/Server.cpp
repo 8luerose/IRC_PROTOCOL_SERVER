@@ -162,9 +162,34 @@ void Server::changeEvent(int ident, int flag, void *udata)
 }
 
 
-/* destructor */
+// 태현 추가
 Server::~Server()
 {
+	std::map<int, Client>::iterator iter;
+	iter = _clientList.begin();
+	while (iter != _clientList.end())
+	{
+		close(iter->first);
+		iter++;
+	}
+
+	std::map<std::string, Channel*>::iterator channelIter;
+	channelIter = _channelList.begin();
+	while (channelIter != _channelList.end())
+	{
+		delete (channelIter->second);
+		// delete 하는 이유
+		// Server::appendNewChannel(int fd, std::string& channelName) 에서
+ 		// ( ... , 'new Channel'(channelName, fd)));
+		// new로 동적할당했기 때문에 Channel 은 꼭 delete 할것!!
+		channelIter++;
+	}
+
+	_clientList.clear();
+	_channelList.clear();
+	// clear()는 map의 모든 요소를 제거함
+	delete _command;	// new Command(*this); 생성자에서 동적할당했었음
+	close(_serverSock);
 }
 
 // 태현 추가
@@ -212,6 +237,7 @@ Channel* Server::findChannel(std::string channel_name)
 	return (NULL);
 }
 
+// 태현 추가
 void Server::appendNewChannel(int fd, std::string& channelName)
 {
 	_channelList.insert(std::make_pair(channelName, new Channel(channelName, fd)));

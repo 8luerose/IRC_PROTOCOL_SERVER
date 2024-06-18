@@ -135,7 +135,7 @@ void Client::clearAllChannel()
 }
 
 void Client::resetClient()
-{
+{	// 클라이언트 정보 초기화 -> 다른 클라이언트가 또 쓸 수 있게
 	setRegiAll(false);
 	clearAllChannel();
 	clearReciveBuf();
