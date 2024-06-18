@@ -69,7 +69,7 @@ void Command::messageAllChannel(int fd, std::string channelName, std::string com
 }
 
 std::string Command::channelMessage(int index, std::vector<std::string> command_vec)
-{
+{	// 채널 메시지란? :<메시지> 이런 형태로 출력
 	std::string message = "";
 	// 커멘드 벡터의 인덱스부터 메시지 생성
 	for (size_t i = index; i < command_vec.size(); i++)
