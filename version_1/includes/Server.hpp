@@ -60,7 +60,7 @@ public:
 	~Server();
 
 	/* member variables */
-	Client *_bot;
+	// Client *_bot;
 
 	/* member functions */
 	// getter
@@ -77,7 +77,7 @@ public:
 	void appendNewChannel(std::string &, int);
 
 
-		class bindError : public std::exception
+	class bindError : public std::exception
 	{
 	public:
 		virtual const char *what() const throw()
@@ -125,14 +125,14 @@ public:
 			return ("read error");
 		}
 	};
-	class unknownError : public std::exception
-	{
-	public:
-		virtual const char *what(std::string& msg) const throw()
-		{
-			return (msg.c_str());
-		}
-	};
+	// class unknownError : public std::exception
+	// {
+	// public:
+	// 	virtual const char *what(std::string& msg) const throw()
+	// 	{
+	// 		return (msg.c_str());
+	// 	}
+	// };
 };
 
 #endif

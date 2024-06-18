@@ -68,3 +68,24 @@ void Command::messageAllChannel(int fd, std::string channelName, std::string com
 		fd_iter++;
 	}
 }
+
+std::string Command::channelMessage(int index, std::vector<std::string> command_vec)
+{
+	std::string message = "";
+	// 커멘드 벡터의 인덱스부터 메시지 생성
+	for (size_t i = index; i < command_vec.size(); i++)
+	{
+		// 메시지에 커멘드 벡터의 인덱스 추가
+		message += command_vec[i];
+		// 만약 인덱스가 마지막이 아니면 공백 추가
+		if (i != command_vec.size() - 1)
+			message += " ";
+	}
+	// 만약 메시지가 ':'로 시작하면 ':' 제거
+	if (message[0] == ':')
+		message = message.substr(1, message.length() - 1); // ':' 제거
+	// 만약 메시지가 비어있으면 NO REASON 추가
+	if (message.length() == 0)
+		message = "NO REASON"; // NO REASON
+	return (message);
+}
