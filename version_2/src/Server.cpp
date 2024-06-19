@@ -144,6 +144,19 @@ void Server::execute()
 						_clientList[_curr_event->ident].appendReciveBuf(buf);
 						std::cout << "received data from " << _curr_event->ident << ": " << _clientList[_curr_event->ident].getReciveBuf() << std::endl;
 						_command->run(_curr_event->ident);
+
+						// 태현 추가 - send 부분
+						std::map<int, Client>::iterator iter;
+
+						iter = _clientList.begin();
+						while (iter != _clientList.end())
+						{
+							if (iter->second.getReciveBuf().empty() == false)
+							{
+								send(iter->first, iter->second.getReciveBuf().c_str(), iter->second.getReciveBuf().size(), 0);
+								iter->second.clearReciveBuf();
+							}
+						}
 					}
 				}
 			}
