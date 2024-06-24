@@ -32,7 +32,8 @@ SRCS_SERVER= main.cpp \
 			Command/Privmsg.cpp \
 			Command/Quit.cpp \
 			Command/Topic.cpp \
-			Command/User.cpp
+			Command/User.cpp \
+			Command/List.cpp
 
 
 OBJS_SERVER = $(SRCS_SERVER:.cpp=.o)

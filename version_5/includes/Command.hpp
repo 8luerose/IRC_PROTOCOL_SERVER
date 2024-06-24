@@ -45,6 +45,7 @@ class Command
 		void		mode(int, std::vector<std::string>);
 		void		topic(int, std::vector<std::string>);
 		void		invite(int, std::vector<std::string>);
+		void		list(int, std::vector<std::string>);
 		// utils in commands/
 		void		botCommand(int, std::vector<std::string>);
 		void		topicMessage(int, std::string);
@@ -57,6 +58,8 @@ class Command
 		void		channelPRIVMSG(std::string, Client&, Channel*);
 		void		channelPART(int, std::string, std::vector<std::string>);
 		void		nameListMsg(int, std::string);
+		std::string intToString(int);
+
 
 		std::string					makeMsgForm(int);
 		void						messageAllChannel(int, std::string, std::string, std::string);

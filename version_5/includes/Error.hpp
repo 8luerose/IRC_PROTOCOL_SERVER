@@ -44,6 +44,7 @@
 // INVITE
 # define ERR_USERONCHANNEL "is already on channel\r\n"
 # define RPL_INVITING "Inviting\r\n"
+# define ERR_UNKNOWNCOMMAND "Unknown command\r\n"
 
 class Client;
 
@@ -64,5 +65,6 @@ void ERROR_unknownmode_472(Client &, char);
 void ERROR_inviteonlychan_473(Client &, std::string);
 void ERROR_badchannelkey_475(Client &, std::string);
 void ERROR_chanoprivsneeded_482(Client &, std::string);
+void ERROR_unknowncommand_421(Client &, std::string);
 
 #endif

@@ -158,6 +158,16 @@ void Command::signIn(int fd, std::vector<std::string>& cmdVector)
 			topic(fd, cmdVector);
 		else if (cmdVector[0] == "INVITE")
 			invite(fd, cmdVector);
+		else if (cmdVector[0] == "LIST")
+			list(fd, cmdVector);
+		else
+        {
+            // 등록되어 있지 않은 명령어의 경우 에러처리
+            std::map<int, Client>& clientList = _server.getClientList();
+            std::map<int, Client>::iterator iter = clientList.find(fd);
+            if (iter != clientList.end())
+                ERROR_unknowncommand_421(iter->second, cmdVector[0]);
+        }
 	}
 	// if (cmdVector[0] == "USER")
 	// 	user(fd, cmdVector);

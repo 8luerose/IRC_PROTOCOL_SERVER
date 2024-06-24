@@ -141,3 +141,14 @@ void Command::nameListMsg(int fd, std::string channelName)
 	client.appendReciveBuf("366 " + client.getNickname() + " " + channelName + " :End of NAMES list.\r\n");	// 끝내기
 	// 366 <nickname> #channel :End of NAMES list.
 }
+
+// 태현 추가
+std::string Command::intToString(int value)
+{
+	std::string str;
+	std::stringstream ss;
+
+	ss << value;	// 임시 스트림 객체에 int값 넣기
+	ss >> str;		// 임시 스트림 객체에서 string으로 변환
+	return (str);	// string 반환
+}

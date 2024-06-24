@@ -84,3 +84,8 @@ void ERROR_chanoprivsneeded_482(Client &client, std::string channel)
 {
     client.appendReciveBuf("482 " + client.getNickname() + " " + channel + " :" + ERR_CHANOPRIVSNEEDED);
 }
+
+void ERROR_unknowncommand_421(Client &client, std::string command)
+{
+    client.appendReciveBuf("421 " + client.getNickname() + " " + command + " :" + ERR_UNKNOWNCOMMAND);
+}

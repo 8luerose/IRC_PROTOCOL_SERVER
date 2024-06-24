@@ -38,7 +38,8 @@ void Command::part(int fd, std::vector<std::string> cmdVector)
 			channel->removeOperatorFd(fd);										// 채널 오퍼레이터 목록에서 fd 제거
 			fd_iter->second.deleteChannel(*channelList_iter);					// 클라이언트가 속한 채널 List에서 해당 채널 제거
 			
-			if (channel->getFdListClient().size() == 1)							// 만약 해당 채널에 남은 인원이 1명이라면
+			// if (channel->getFdListClient().size() == 1)							// 만약 해당 채널에 남은 인원이 1명이라면
+			if (channel->getFdListClient().size() == 0)							// 만약 해당 채널에 남은 인원이 1명이라면
 			{
 				_server.removeChannel(channel->getChannelName());				// 서버에서 채널리스트 중 해당 채널 제거
 				delete channel;
