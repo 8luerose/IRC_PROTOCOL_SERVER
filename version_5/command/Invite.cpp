@@ -49,7 +49,7 @@ void Command::invite(int fd, std::vector<std::string> cmdVector)
 	// "명령어 사용하는 클라이언트 닉네임: '명령어 사용자 닉네임' 'INVITE' '초대받을 사람 닉네임' '#채널'"
 	// == "누가 너 초대했는디?"
 
-	client.appendReciveBuf("341 " + client.getNickname() + " " + cmdVector[1] + " " + cmdVector[2] + " :" + RPL_INVITING);
+	client.appendReciveBuf("341 " + client.getNickname() + " " + cmdVector[1] + " " + cmdVector[2] + " :" + RPL_INVITING + "\r\n");
 	// "명령어 사용하는 클라이언트 닉네임 '341' '명령어 사용자 닉네임' '#채널' 'RPL_INVITING'"
 	// == "야 너 누구 초대했더라 명령어 먹힘ㅇㅇ"
 

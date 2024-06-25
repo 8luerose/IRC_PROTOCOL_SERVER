@@ -44,6 +44,8 @@
 // INVITE
 # define ERR_USERONCHANNEL "is already on channel\r\n"
 # define RPL_INVITING "Inviting\r\n"
+
+// OTHER
 # define ERR_UNKNOWNCOMMAND "Unknown command\r\n"
 
 class Client;

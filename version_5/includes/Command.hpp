@@ -36,7 +36,6 @@ class Command
 		void		pass(int, std::vector<std::string>);
 		void		nick(int, std::vector<std::string>);
 		void		user(int, std::vector<std::string>);
-		void		ping(int, std::vector<std::string>);
 		void 		privmsg(int, std::vector<std::string>);
 		void		quit(int, std::vector<std::string>);
 		void		part(int, std::vector<std::string>);
@@ -46,6 +45,7 @@ class Command
 		void		topic(int, std::vector<std::string>);
 		void		invite(int, std::vector<std::string>);
 		void		list(int, std::vector<std::string>);
+		void		ping(int, std::vector<std::string>);
 		// utils in commands/
 		void		botCommand(int, std::vector<std::string>);
 		void		topicMessage(int, std::string);

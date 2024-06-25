@@ -19,12 +19,9 @@ void printCmdVector(std::vector<std::string> cmdVector)
 	std::cout << std::endl;
 }
 
-#define debugFlag int
-
 void Command::run(int fd)
 {
-	debugFlag seok = 0;
-	std::cout << "#command run" << seok << std::endl;
+	std::cout << "#command run" << std::endl;
 
 	std::stringstream				serverMsg;	// server에 저장된 메시지
 	std::string						cmdBuffer;
@@ -32,33 +29,45 @@ void Command::run(int fd)
 	std::map<int, Client>::iterator	iter;		// clients를 순회하기 위한 iterator
 	std::map<int, Client>& clientList = _server.getClientList();	// 서버에 저장된 client 목록
 	serverMsg << _server.getMessage(fd);
-	while (getline(serverMsg, cmdBuffer, ' ')) // 명령어 파싱
-	{
-		std::size_t pos = cmdBuffer.find_last_not_of("\r\n");
-		//find_last_not_of는 특정 문자 집합에 속하지 않는 마지막 문자의 위치를 반환하는 함수
+	// while (getline(serverMsg, cmdBuffer, ' ')) // 명령어 파싱
+	// {
+	// 	std::size_t pos = cmdBuffer.find_last_not_of("\r\n");
+	// 	//find_last_not_of는 특정 문자 집합에 속하지 않는 마지막 문자의 위치를 반환하는 함수
+	// 	// Hello, World\r\n -> 'd'의 위치를 반환
+	// 	cmdVector.push_back(cmdBuffer.substr(0, pos + 1));
+	// 	// "/JOIN #test" -> /JOIN #test 명령어 전체를 Vector에 저장
+	// }
+
+	while (getline(serverMsg, cmdBuffer, ' '))	// 명령어 파싱
+    {
+        size_t pos = cmdBuffer.find_last_not_of("\r\n");
+		// find_last_not_of는 특정 문자 집합에 속하지 않는 마지막 문자의 위치를 반환하는 함수
 		// Hello, World\r\n -> 'd'의 위치를 반환
-		cmdVector.push_back(cmdBuffer.substr(0, pos + 1));
-		// "/JOIN #test" -> /JOIN #test 명령어 전체를 Vector에 저장
-	}
+        std::string command = cmdBuffer.substr(0, pos + 1);
+		// 처음부터 ~ 마지막 문자 (인덱스+1)까지의 문자열을 command에 저장
+
+        if (cmdVector.empty())
+        {	// "JOIN #general" 중 -> 처음 "JOIN"만 -> 4글자 for()로 toupper 적용
+            for (size_t i = 0; i < command.size(); i++)
+                command[i] = std::toupper(command[i]);
+        }
+        cmdVector.push_back(command);
+    }
 	printCmdVector(cmdVector);
+
 	iter = clientList.find(fd);
 	if (iter == clientList.end())
-	{
 		return ;
-	}
 	if ((iter != clientList.end()) && !(iter->second.getIsRegist())) // 클라이언트가 등록되어 있지 않은 경우
 	{
-		// std::cout << "signUp" << seok << std::endl;
 		std::cout << "#signUp" << std::endl;
 		signUp(fd, iter, cmdVector, clientList);
 	}
 	else	// 클라이언트가 등록되어 있는 경우
 	{
-		// std::cout << "signIn" << seok << std::endl;
 		std::cout << "#signIn" << std::endl;
 		signIn(fd, cmdVector);
 	}
-	seok++;
 }
 
 void Command::signUp(int fd, std::map<int, Client>::iterator iter, std::vector<std::string>& cmdVector, std::map<int, Client>& clientList)
@@ -160,6 +169,8 @@ void Command::signIn(int fd, std::vector<std::string>& cmdVector)
 			invite(fd, cmdVector);
 		else if (cmdVector[0] == "LIST")
 			list(fd, cmdVector);
+		else if (cmdVector[0] == "PING")
+			ping(fd, cmdVector);
 		else
         {
             // 등록되어 있지 않은 명령어의 경우 에러처리

@@ -89,7 +89,7 @@ void Command::topic(int fd, std::vector<std::string> cmdVector)
 				str = str.substr(1);										// ':' 제거
 			channel->setTopic(str);											// 채널 토픽(std::string)으로 저장
 		}
-		messageAllChannel(fd, "TOPIC", cmdVector[1], channel->getTopic());	// 채널에 있는 모든 클라이언트에게 TOPIC 메시지 전송
+		messageAllChannel(fd, cmdVector[1], "TOPIC", channel->getTopic());	// 채널에 있는 모든 클라이언트에게 TOPIC 메시지 전송
 		// == " : name ! user @ fd TOPIC #channel :another topic \r\n"
 	}
 }

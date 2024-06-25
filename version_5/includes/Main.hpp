@@ -14,6 +14,8 @@
 #include <map>
 #include <vector>
 #include <sstream>
+#include <algorithm>
+#include <cstddef>
 
 #define BUF_SIZE 1024
 

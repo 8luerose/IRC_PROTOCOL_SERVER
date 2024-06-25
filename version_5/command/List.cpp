@@ -30,6 +30,7 @@ void Command::list(int fd, std::vector<std::string> cmdVector)
 				std::string channelName = channel->getChannelName();
 				std::string topic = channel->getTopic();
 				client.appendReciveBuf("322 " + client.getNickname() + " " + channelName + " " + intToString(channel->getFdListClient().size()) + " :" + topic + "\r\n");
+				// ex) 322 닉네임 #channel 인원수 :토픽
 			}
 			it++;
 		}
