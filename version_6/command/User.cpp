@@ -27,11 +27,11 @@ void Command::user(int fd, std::vector<std::string> cmdVector)
 	{
 		std::cout << "#// USER <username> <hostname> <servername> <:realname> 5개 이상이 아닌 경우" << std::endl;
 		std::cout << "#cmdVector.size() : " << cmdVector.size() << std::endl;
-		std::cout << "#cmdVector[0] : " << cmdVector[0] << std::endl;
-		std::cout << "#cmdVector[1] : " << cmdVector[1] << std::endl;
-		std::cout << "#cmdVector[2] : " << cmdVector[2] << std::endl;
-		std::cout << "#cmdVector[3] : " << cmdVector[3] << std::endl;
-		std::cout << "#cmdVector[4] : " << cmdVector[4] << std::endl;
+		// std::cout << "#cmdVector[0] : " << cmdVector[0] << std::endl;
+		// std::cout << "#cmdVector[1] : " << cmdVector[1] << std::endl;
+		// std::cout << "#cmdVector[2] : " << cmdVector[2] << std::endl;
+		// std::cout << "#cmdVector[3] : " << cmdVector[3] << std::endl;
+		// std::cout << "#cmdVector[4] : " << cmdVector[4] << std::endl;
 		ERROR_needmoreparams_461(iter->second);
 		iter->second.appendReciveBuf("/USER <username> <hostname> <servername> <:realname>\r\n");
 		return;
@@ -41,11 +41,11 @@ void Command::user(int fd, std::vector<std::string> cmdVector)
 	{
 		std::cout << "#// realname이 :로 시작하지 않는 경우" << std::endl;
 		std::cout << "#cmdVector.size() : " << cmdVector.size() << std::endl;
-		std::cout << "#cmdVector[0] : " << cmdVector[0] << std::endl;
-		std::cout << "#cmdVector[1] : " << cmdVector[1] << std::endl;
-		std::cout << "#cmdVector[2] : " << cmdVector[2] << std::endl;
-		std::cout << "#cmdVector[3] : " << cmdVector[3] << std::endl;
-		std::cout << "#cmdVector[4] : " << cmdVector[4] << std::endl;
+		// std::cout << "#cmdVector[0] : " << cmdVector[0] << std::endl;
+		// std::cout << "#cmdVector[1] : " << cmdVector[1] << std::endl;
+		// std::cout << "#cmdVector[2] : " << cmdVector[2] << std::endl;
+		// std::cout << "#cmdVector[3] : " << cmdVector[3] << std::endl;
+		// std::cout << "#cmdVector[4] : " << cmdVector[4] << std::endl;
 		ERROR_needmoreparams_461(iter->second);
 		iter->second.appendReciveBuf("/USER <username> <hostname> <servername> <:realname>\r\n");
 		return;

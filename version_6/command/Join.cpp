@@ -14,12 +14,6 @@ void Command::join(int fd, std::vector<std::string> cmdVector)
 		return;
 	}
 
-	// 기존
-	// parse <channel> : <joinChannelArgv>
-	// std::vector<std::string> joinChannelArgv = split(cmdVector[1], ','); // #general,#random -> 이러면 joinChannelArgv = {"#general", "#random"}
-	// std::vector<std::string>::iterator iter = joinChannelArgv.begin();
-
-	// 태현 추가
 	std::vector<std::string> joinChannelArgv;
 	std::vector<std::string>::iterator iter;
 	if (cmdVector[1].find(',') != std::string::npos) // 채널이 2개 이상인 경우
@@ -42,21 +36,20 @@ void Command::join(int fd, std::vector<std::string> cmdVector)
 	std::vector<std::string> joinKeyArgv;
 	std::vector<std::string>::iterator keyIter;
 
-	// optional
-	// if (cmdVector.size() > 2) // JOIN <#channel> <key> 3개 이상인 경우 ** JOIN은 key만 argv 로 올 수 있음! **
-	// {	//#general, #seok 등 채널이 2개 이상인 경우, key도 2개 이상 올 수 있음
-	// 	joinKeyArgv = split(cmdVector[2], ',');
-	// 	keyIter = joinKeyArgv.begin();
-	// 	return;
-	// }
 
-	// 태현 추가 - JOIN <#channel> <key> 3개 이상인 경우
 	if (joinChannelArgv.size() > 1)	// -> joinChannelArgv = {"#general", "#random"} 인 경우
 	{
 		std::cout << "#Channel 2개 경우" << std::endl;
 		if(cmdVector.size() >= 3) 	//#general, #seok 등 채널이 2개 이상인 경우, key도 2개 이상 올 수 있음
 		{
-			joinKeyArgv = split(cmdVector[2], ',');
+			if (cmdVector[2] == "")	// JOIN <#channel>,<#channel> <' '> -> key가 없는 경우
+			{
+				joinKeyArgv.push_back("");	// segmentation fault 방지
+			}
+			else
+			{
+				joinKeyArgv = split(cmdVector[2], ',');
+			}
 			keyIter = joinKeyArgv.begin();
 			std::cout << "#Channel 2개 + Key 2개" << std::endl;
 			std::cout << "#key = " << *keyIter << std::endl;
@@ -93,15 +86,18 @@ void Command::join(int fd, std::vector<std::string> cmdVector)
 				keyIter++;
 			continue;
 		}
+		std::cout << "#채널 이름 인가 통과" << std::endl;
 		std::map<std::string, Channel*> &channelList = _server.getChannelList();
 		std::map<std::string, Channel*>::iterator channelIt = channelList.find(*iter);
 		// 채널이 존재 할 경우
 		if (channelIt != channelList.end())
 		{
+			std::cout << "#채널이 존재함" << std::endl;
 			Channel *channel = channelIt->second;
 			// 채널에 클라이언트가 있는지 확인
 			if (channel->diffClientInChannel(fd))
 			{
+				std::cout << "#채널에 클라이언트가 이미 있음" << std::endl;
 				// 이미 채널에 있는 경우
 				iter++;
 				// optional
@@ -111,31 +107,53 @@ void Command::join(int fd, std::vector<std::string> cmdVector)
 				}
 				continue;
 			}
-			// invite mode 일 때
-			if (channel->diffMode('i'))
-			{
-				if (channel->diffInvite(fd))
-				{
-					ERROR_inviteonlychan_473(client, *iter);
-					iter++;
-					if (cmdVector.size() > 2 || keyIter != joinKeyArgv.end())
-					{
-						// key처리
-						keyIter++;
-					}
-					continue;
-				}
-			}
+			std::cout << "#채널에 클라이언트가 없음" << std::endl;
+			// // invite mode 일 때
+			// if (channel->diffMode('i'))
+			// {
+			// 	if (channel->diffInvite(fd) == false)	
+			// 	{
+			// 		ERROR_inviteonlychan_473(client, *iter);
+			// 		iter++;
+			// 		if (cmdVector.size() > 2 || keyIter != joinKeyArgv.end())
+			// 		{
+			// 			// key처리
+			// 			keyIter++;
+			// 		}
+			// 		continue;
+			// 	}
+			// }
 			// key mode 일 때
 			if (channel->diffMode('k'))
 			{
+				std::cout << "#join에서 key 체크" << std::endl;
+
+				// 디버깅 테스트
+				if (cmdVector.size() <= 2)
+					std::cout << "#cmdVector.size() <= 2" << std::endl;
+				if (keyIter == joinKeyArgv.end())
+					std::cout << "#keyIter == joinKeyArgv.end()" << std::endl;
+				if (keyIter != joinKeyArgv.end() && channel->diffKey(*keyIter) == false)	// segmentaion fault 방지 -> keyIter가 없는데 *keyIter를 참조하려고 하면 segmentation fault 발생
+					std::cout << "#channel->diffKey(*keyIter) == false" << std::endl;
+				std::cout << "#1차 디버깅 통과" << std::endl;
 				// if (cmdVector.size() <= 2 || keyIter == joinKeyArgv.end() || channel->diffKey(*keyIter) == false)	// 태현 수정, key가 없거나 key가 틀릴 때
-				
-				if (cmdVector.size() <= 2 || keyIter == joinKeyArgv.end() || channel->diffKey(*keyIter) == false)	// 태현 수정, key가 없거나 key가 틀릴 때
+				// 이 부분에서 segmentaiton fault 발생 -> 발생 이유는 if 3개 중
+				// keyIter == joinKeyArgv.end()에서 joinKeyArgv가 비어있는 경우, keyIter가 end()를 가리키기 때문
+				// 따라서 joinKeyArgv가 비어있는 경우를 먼저 검사해주어야 함
+				// joinKeyArgv가 비어있는 경우에는 -> joinkeyArgv.empty() == true
+				if (joinKeyArgv.empty())
+				{
+					std::cout << "#joinKeyArgv.empty()" << std::endl;
+					ERROR_badchannelkey_475(client, *iter);
+					return ;
+				}
+				else if (cmdVector.size() <= 2 || keyIter == joinKeyArgv.end() || (keyIter != joinKeyArgv.end() && channel->diffKey(*keyIter) == false))	// 태현 수정, key가 없거나 key가 틀릴 때
 				{
 					// ERR_BADCHANNELKEY = ":<server> 475 <nickname> <channel> :Cannot join channel (+k)"
 					ERROR_badchannelkey_475(client, *iter);
-					std::cout << "#key = " << *keyIter << std::endl;
+					if (keyIter != joinKeyArgv.end())
+						std::cout << "#key = " << *keyIter << std::endl;
+					// std::cout << "#key = " << *keyIter << std::endl;
 					// 디버깅 테스트
 					if (cmdVector.size() <= 2)
 						std::cout << "#cmdVector.size() <= 2" << std::endl;
@@ -152,9 +170,28 @@ void Command::join(int fd, std::vector<std::string> cmdVector)
 					continue;
 				}
 			}
+			std::cout << "#key 체크 통과" << std::endl;
+			// invite mode 일 때
+			if (channel->diffMode('i'))
+			{
+				std::cout << "#join에서 invite 체크" << std::endl;
+				if (channel->diffInvite(fd) == false)	
+				{
+					ERROR_inviteonlychan_473(client, *iter);
+					iter++;
+					if (cmdVector.size() > 2 || keyIter != joinKeyArgv.end())
+					{
+						// key처리
+						keyIter++;
+					}
+					continue;
+				}
+			}
+			std::cout << "#invite 체크 통과" << std::endl;
 			// LIMIT 모드일 때
 			if (channel->diffMode('l'))
 			{
+				std::cout << "#join에서 limit 체크" << std::endl;
 				if (channel->getFdListClient().size() >= channel->getLimit()) // LIMIT을 초과할 때 :
 				{
 					// ERR_CHANNELISFULL = ":<server> 471 <nickname> <channel> :Cannot join channel (+l)"
@@ -168,6 +205,7 @@ void Command::join(int fd, std::vector<std::string> cmdVector)
 					continue;
 				}
 			}
+			std::cout << "#limit 체크 통과" << std::endl;
 			std::string channelName = (*channelIt).second->getChannelName();
 			client.appendChannelList(channelName);					// operator인 client가 속한 channelList에 '#genral, #random' 추가
 			(*channelIt).second->appendFdListClient(fd);			// #general, #random 등 실제 채널에 fd 추가 (이름으로 직접 접근 ㄴㄴ 서버에 저장된 채널리스트를 iter로 순회하며 채널 접근)

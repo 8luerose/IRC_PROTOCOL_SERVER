@@ -29,15 +29,6 @@ void Command::run(int fd)
 	std::map<int, Client>::iterator	iter;		// clients를 순회하기 위한 iterator
 	std::map<int, Client>& clientList = _server.getClientList();	// 서버에 저장된 client 목록
 	serverMsg << _server.getMessage(fd);
-	
-	// while (getline(serverMsg, cmdBuffer, ' ')) // 명령어 파싱
-	// {
-	// 	std::size_t pos = cmdBuffer.find_last_not_of("\r\n");
-	// 	//find_last_not_of는 특정 문자 집합에 속하지 않는 마지막 문자의 위치를 반환하는 함수
-	// 	// Hello, World\r\n -> 'd'의 위치를 반환
-	// 	cmdVector.push_back(cmdBuffer.substr(0, pos + 1));
-	// 	// "/JOIN #test" -> /JOIN #test 명령어 전체를 Vector에 저장
-	// }
 
 	// 태현 추가
 	std::string irssiTest = serverMsg.str();	// irssi 전용
@@ -63,20 +54,6 @@ void Command::run(int fd)
 			cmdVector.push_back(command);
 		}
 		printCmdVector(cmdVector);
-
-		// iter = clientList.find(fd);
-		// if (iter == clientList.end())
-		// 	return ;
-		// if ((iter != clientList.end()) && !(iter->second.getIsRegist())) // 클라이언트가 등록되어 있지 않은 경우
-		// {
-		// 	std::cout << "#signUp" << std::endl;
-		// 	signUp(fd, iter, cmdVector, clientList);
-		// }
-		// else	// 클라이언트가 등록되어 있는 경우
-		// {
-		// 	std::cout << "#signIn" << std::endl;
-		// 	signIn(fd, cmdVector);
-		// }
 	}
 	iter = clientList.find(fd);
 	if (iter == clientList.end())
@@ -91,38 +68,6 @@ void Command::run(int fd)
 		std::cout << "#signIn" << std::endl;
 		signIn(fd, cmdVector);
 	}
-
-	// 기존
-	// while (getline(serverMsg, cmdBuffer, ' '))	// 명령어 파싱
-    // {
-    //     size_t pos = cmdBuffer.find_last_not_of("\r\n");
-	// 	// find_last_not_of는 특정 문자 집합에 속하지 않는 마지막 문자의 위치를 반환하는 함수
-	// 	// Hello, World\r\n -> 'd'의 위치를 반환
-    //     std::string command = cmdBuffer.substr(0, pos + 1);
-	// 	// 처음부터 ~ 마지막 문자 (인덱스+1)까지의 문자열을 command에 저장
-
-    //     if (cmdVector.empty())
-    //     {	// "JOIN #general" 중 -> 처음 "JOIN"만 -> 4글자 for()로 toupper 적용
-    //         for (size_t i = 0; i < command.size(); i++)
-    //             command[i] = std::toupper(command[i]);
-    //     }
-    //     cmdVector.push_back(command);
-    // }
-	// printCmdVector(cmdVector);
-
-	// iter = clientList.find(fd);
-	// if (iter == clientList.end())
-	// 	return ;
-	// if ((iter != clientList.end()) && !(iter->second.getIsRegist())) // 클라이언트가 등록되어 있지 않은 경우
-	// {
-	// 	std::cout << "#signUp" << std::endl;
-	// 	signUp(fd, iter, cmdVector, clientList);
-	// }
-	// else	// 클라이언트가 등록되어 있는 경우
-	// {
-	// 	std::cout << "#signIn" << std::endl;
-	// 	signIn(fd, cmdVector);
-	// }
 }
 
 void Command::irssiSignUp(int fd, std::string irssiFullCommand)
@@ -140,63 +85,10 @@ void Command::irssiSignUp(int fd, std::string irssiFullCommand)
 
 		while (tmp >> cmd)						// stringstream을 이용해 공백을 기준으로 명령어를 나눔
 		{
-			// if (cmdVector.empty() || cmdVector[0] != "USER")	// 처음이거나(PASS) USER 명령어가 아닌 경우에는 '공백'을 기준으로 나눈 명령어를 그대로 저장
-			// 	cmdVector.push_back(cmd);
-			// else	
-			// {	// USER 명령어 발견되면!
-			// 	// ex) USER <username> <hostname> <servername> :<realname>
-			// 	// :<realname>은 "kwon tae hyun"과 같이 공백이 포함된 문자열이므로, 나머지 문자열을 모두 저장
-			// 	std::string untilRealname;
-			// 	getline(tmp, untilRealname);
-			// 	cmdVector.push_back(untilRealname);
-			// 	break;
-			// }
-
 			if (cmdVector.empty())
 				cmdVector.push_back(cmd); // 첫 번째 명령어 저장, 예: "USER"
 			else if (cmdVector[0] == "USER")
 			{
-				// "USER rose rose localhost :권태현" 이렇게 올경우는 아래처럼 코드를 짠다
-				// tmp에는 "rose rose localhost :권태현"이 저장되어 있음
-				// 따라서 tmp를 공백을 기준으로 나누어서 cmdVector에 저장
-				// 이제 ":권태현" 이전까지를 하나씩 cmdVector에 저장
-
-
-				
-
-
-				// "USER" 명령어가 이미 저장되어 있을 경우
-				// std::string untilRealName;
-				// getline(tmp, untilRealName);	// "USER" 이후 전체 라인을 캡처
-				// // cmdVector.push_back(untilRealName);
-				// size_t colonPos = untilRealName.find(':');  // 콜론 위치 찾기
-				// if (colonPos != std::string::npos)
-				// {
-				// 	cmdVector.push_back(untilRealName.substr(0, colonPos));  // '콜론 이전'의 문자열 추가
-				// 	cmdVector.push_back(untilRealName.substr(colonPos + 1));  // '콜론 이후'의 문자열 추가
-				// }
-				// break;	// USER 명령어는 한 줄로 끝남 -> 종료
-                // "USER" 다음에 오는 문자열들을 파싱
-
-				// std::string username, hostname, servername, realname;
-				// std::string untilRealName;
-				// std::cout << "#stream!!" << std::endl;
-				// std::cout << "#tmp: " << tmp.str() << std::endl;
-				// // getline(tmp, untilRealName);	// "USER" 이후 전체 라인을 캡처
-				// tmp >> username >> hostname >> servername; // 다음 세 파라미터를 읽음
-				// std::cout << "#username: " << username << std::endl;
-				// std::cout << "#hostname: " << hostname << std::endl;
-				// std::cout << "#servername: " << servername << std::endl;
-				// size_t colonPos = untilRealName.find(':');  // 콜론 위치 찾기
-				// if (colonPos != std::string::npos)
-				// {
-				// 	std::cout << "#colonPos: " << colonPos << std::endl;
-				// 	std::cout << "#untilRealName: " << untilRealName << std::endl;
-				// 	cmdVector.push_back(untilRealName.substr(0, colonPos));  // '콜론 이전'의 문자열 추가
-				// 	cmdVector.push_back(untilRealName.substr(colonPos, untilRealName.length()));  // '콜론 부터' 끝까지의 문자열 추가
-				// }
-				// break;
-
                 std::string username, hostname, servername, realname;
 				std::cout << "#stream!!" << std::endl;
 				std::cout << "#tmp: " << tmp.str() << std::endl;
@@ -282,23 +174,6 @@ void Command::signUp(int fd, std::map<int, Client>::iterator iter, std::vector<s
 			notRegister(fd, iter, clientList);
 		}
 	}
-	// if (cmdVector[0] == "PASS")
-	// {
-	// 	pass(fd, cmdVector);
-	// }
-	// else if (cmdVector[0] == "NICK")
-	// {
-	// 	nick(fd, cmdVector);
-	// }
-	// else if (cmdVector[0] == "USER")
-	// {
-	// 	user(fd, cmdVector);
-	// }
-	// else
-	// {
-	// 	notRegister(fd, iter, clientList);
-	// 	std::cout << "#noregi# tae: " << tae << std::endl;
-	// }
 
 	// 첫 실행 시, 인사말 출력
 	iter = clientList.find(fd);
@@ -370,26 +245,4 @@ void Command::signIn(int fd, std::vector<std::string>& cmdVector)
                 ERROR_unknowncommand_421(iter->second, cmdVector[0]);
         }
 	}
-	// if (cmdVector[0] == "USER")
-	// 	user(fd, cmdVector);
-	// else if (cmdVector[0] == "NICK")
-	// 	nick(fd, cmdVector);
-	// else if (cmdVector[0] == "PASS")
-	// 	pass(fd, cmdVector);
-	// else if (cmdVector[0] == "PRIVMSG")
-	// 	privmsg(fd, cmdVector);
-	// else if (cmdVector[0] == "QUIT")
-	// 	quit(fd, cmdVector);
-	// else if (cmdVector[0] == "PART")
-	// 	part(fd, cmdVector);
-	// else if (cmdVector[0] == "JOIN")
-	// 	join(fd, cmdVector);
-	// else if (cmdVector[0] == "KICK")
-	// 	kick(fd, cmdVector);
-	// else if (cmdVector[0] == "MODE")
-	// 	mode(fd, cmdVector);
-	// else if (cmdVector[0] == "TOPIC")
-	// 	topic(fd, cmdVector);
-	// else if (cmdVector[0] == "INVITE")
-	// 	invite(fd, cmdVector);
 }

@@ -174,8 +174,8 @@ void Server::changeEvent(int ident, int flag, void *udata)
 	struct kevent temp_event;
 	if (flag == READ)
 		EV_SET(&temp_event, ident, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, udata);
-	// else if (flag == WRITE)
-	// 	EV_SET(&temp_event, ident, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, udata);
+	else if (flag == WRITE)
+		EV_SET(&temp_event, ident, EVFILT_WRITE, EV_ADD | EV_ENABLE, 0, 0, udata);
 	_changeList.push_back(temp_event);
 }
 
@@ -235,16 +235,6 @@ std::map<std::string, Channel*> &Server::getChannelList()
 	return (_channelList);
 }
 
-// Channel Server::findChannel(std::string channel_name)
-// {
-// 	std::map<std::string, Channel>::iterator iter;
-	
-// 	iter = _channelList.find(channel_name);
-// 	if (iter != _channelList.end())
-// 		return (iter->second);
-// 	return (Channel());
-// }
-
 Channel* Server::findChannel(std::string channel_name)
 {
 	std::map<std::string, Channel*>::iterator iter;
@@ -255,34 +245,11 @@ Channel* Server::findChannel(std::string channel_name)
 	return (NULL);
 }
 
-// 태현 추가
-// void Server::appendNewChannel(int fd, std::string channelName)
 void Server::appendNewChannel(int fd, std::string& channelName)
 {
 	_channelList.insert(std::make_pair(channelName, new Channel(channelName, fd)));
 }
 
-// 과거
-// std::string Server::getMessage(int clientSock)
-// {
-// 	std::string message;
-// 	char buf[512]; // line max_len == 510	(512 - "\r\n")
-// 	int n = recv(clientSock, buf, sizeof(buf), 0);
-// 	if (n <= 0)
-// 	{
-// 		if (n < 0)
-// 			std::cerr << "client read error!" << std::endl;
-// 		disconnectClient(clientSock);
-// 	}
-// 	else
-// 	{
-// 		buf[n] = '\0';
-// 		message = buf;
-// 	}
-// 	return message;
-// }
-
-// 태현 수정
 std::string Server::getMessage(int clientSock)
 {
     std::string message;
@@ -302,10 +269,6 @@ std::string Server::getMessage(int clientSock)
 			buf[511] = '\n';	//실제 글자 번째인 512번째에 '\n'을 넣어줌
 			buf[512] = '\0';
 
-            // for (int i = 513; i < sizeof(buf); ++i) {		// 나머지 buf를 '\0'로 채움
-            //     buf[i] = '\0';
-            // }
-
         	message = std::string(buf, 513);	// 'std::string(buf, 513);' -> buf의 513개의 문자를 message에 저장
         }
         else
@@ -316,7 +279,6 @@ std::string Server::getMessage(int clientSock)
     }
     return message;
 }
-
 
 std::string Server::getPassword()
 {

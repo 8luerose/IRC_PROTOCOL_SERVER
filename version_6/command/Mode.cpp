@@ -21,13 +21,17 @@ void Command::mode(int fd, std::vector<std::string> cmdVector)
 		return;
 	}
 	std::string argvChannelName = cmdVector[1];	// #channel of /Mode 
+
+    // 석준 조건문 추가
+    if (client.getNickname() == argvChannelName)
+        return;
+
 	Channel *channel = _server.findChannel(argvChannelName);
 	// findChannel 반환값 : (Channel*) or (NULL)
-	
-	// 에러
-	if ((channel == NULL) && (client.getNickname() != argvChannelName))
-	{	// /Mode 인자인 '#channel'을 서버에 저장된 채널 리스트에서 못 찾았고
-		// and 애초에 (fd != argvChannelName) 일 때
+
+    // 석준 조건문 변경
+	if (channel == NULL)
+	{	// /Mode 인자인 '#channel'을 서버에 저장된 채널 리스트에서 못 찾았을 때
 		ERROR_nosuchchannel_403(client, argvChannelName);	// (Client &, std::string)
 		return;
 	}
