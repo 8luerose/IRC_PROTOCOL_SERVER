@@ -30,6 +30,11 @@ void Command::run(int fd)
 	std::map<int, Client>& clientList = _server.getClientList();	// 서버에 저장된 client 목록
 	serverMsg << _server.getMessage(fd);
 
+	//만약 "CAP LS"라는 문자열이 들어올 경우 아무것도 하지 않는 코드
+	if (serverMsg.str().find("CAP LS") != std::string::npos)
+		return ;
+
+
 	// 태현 추가
 	std::string irssiTest = serverMsg.str();	// irssi 전용
 	if (irssiTest.find("PASS") != std::string::npos &&	\
@@ -236,6 +241,10 @@ void Command::signIn(int fd, std::vector<std::string>& cmdVector)
 			list(fd, cmdVector);
 		else if (cmdVector[0] == "PING")
 			ping(fd, cmdVector);
+		else if (cmdVector[0] == "WHOIS")
+			;
+		else if (cmdVector[0] == "WHO")
+			;
 		else
         {
             // 등록되어 있지 않은 명령어의 경우 에러처리

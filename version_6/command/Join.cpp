@@ -97,6 +97,9 @@ void Command::join(int fd, std::vector<std::string> cmdVector)
 			// 채널에 클라이언트가 있는지 확인
 			if (channel->diffClientInChannel(fd))
 			{
+				// 443 에러 + <nickname> <channel> :is already on channel
+				ERROR_useronchannel_443(client, client.getNickname(), channel->getChannelName());
+
 				std::cout << "#채널에 클라이언트가 이미 있음" << std::endl;
 				// 이미 채널에 있는 경우
 				iter++;
