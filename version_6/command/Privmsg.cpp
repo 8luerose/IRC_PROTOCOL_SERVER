@@ -28,8 +28,12 @@ void Command::privmsg(int fd, std::vector<std::string> cmdVector)
 				// 메시지 생성
 				std::string message = channelMessage(2, cmdVector);
 				// 클라이언트에게 메시지 버퍼에 추가
+				
+				// 기존
 				// client_iter->second.appendReciveBuf(":" + client_iter->second.getNickname() + " PRIVMSG " + client.getNickname() + " :" + message + "\r\n");
-				client_iter->second.appendReciveBuf(":" + client.getNickname() + " PRIVMSG " + client_iter->second.getNickname() + " :" + message + "\r\n");
+
+				// 태현 추가
+				client_iter->second.appendReciveBuf("PRIVMSG " + makeMsgForm(fd, cmdVector[0]) + " :" + message + "\r\n");
 			}
 			// 클라이언트가 존재하지 않는 경우
 			else

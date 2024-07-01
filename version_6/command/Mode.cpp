@@ -51,12 +51,19 @@ void Command::mode(int fd, std::vector<std::string> cmdVector)
             oss << channel->getLimit();
             modeParams += " " + oss.str();
 		}			
-		client.appendReciveBuf("324" + argvChannelName + " +" + channel->getMode() + modeParams + "\r\n");
+		client.appendReciveBuf("324 " + argvChannelName + " +" + channel->getMode() + modeParams + "\r\n");
         return;
 		// == "<channel> <mode> <mode params>"
 		// == ex) 324 #channel +kt secret
 		// <mode params> == <+/- i, t, k, l, o> mode 뒤에 오는 "<t,k,l 에 해당하는 values>"
 	}
+
+
+	// 태현 추가
+	std::string modeArgv = cmdVector[2];	// ex) <+/- i, t, k, l, o>
+	if (modeArgv.length() == 1)				// MODE #gen b 이렇게만 들어왔을 때 종료
+		return;
+
 
 	if (channel != NULL && !channel->diffOperator(fd))
 	{	// 채널이 존재하고, 채널 오퍼레이터가 아닐 때

@@ -62,7 +62,8 @@ class Command
 		std::string intToString(int);
 
 
-		std::string					makeMsgForm(int);
+		// std::string					makeMsgForm(int);
+		std::string					makeMsgForm(int, std::string);
 		void						messageAllChannel(int, std::string, std::string, std::string);
 };
 

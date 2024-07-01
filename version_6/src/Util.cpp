@@ -23,7 +23,7 @@ std::vector<std::string> split(std::string str, char delim)
 	return (tmpVector);
 }
 
-std::string Command::makeMsgForm(int fd)
+std::string Command::makeMsgForm(int fd, std::string command)
 {	// 접두사 구문 함수
 	// ex) :<닉네임>!<사용자 아이디>@<호스트네임>
 	
@@ -32,9 +32,16 @@ std::string Command::makeMsgForm(int fd)
 	Client &client = iter->second;
 	std::string prefix;
 	
-	prefix = (":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServername());
-	// <prefix>   ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
-	// 2.3.1 Message format in 'pseudo' BNF -> [page 8]
+	if (command == "PRIVMSG" || command == "JOIN" || command == "QUIT" || command == "PART")
+	{	// ex) :yournick!user@host
+		prefix = (":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServername());
+		// <prefix>   ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
+		// 2.3.1 Message format in 'pseudo' BNF -> [page 8]
+	}
+	else
+	{	// ex) :servername
+		prefix = (":" + client.getServername());
+	}
 	return (prefix);
 }
 
@@ -49,6 +56,24 @@ void Command::messageAllChannel(int fd, std::string channelName, std::string com
 	Channel *channel = channelList.find(channelName)->second;
 	std::vector<int> fdList = channel->getFdListClient();
 	std::vector<int>::iterator fd_iter = fdList.begin();
+	// while (fd_iter != fdList.end())
+	// {
+	// 	std::cout << "#fd_iter : " << *fd_iter << std::endl;
+	// 	Client& targetClient = _server.getClientList().find(*fd_iter)->second;
+	// 	if ((fd == (*fd_iter)) && (command == "PRIVMSG")) // 자신에게는 보내지 않음
+	// 	{
+	// 		fd_iter++;
+	// 		continue ;
+	// 	}
+	// 	std::cout << "#targetClient.getNickname() : " << targetClient.getNickname() << std::endl;
+	// 	targetClient.appendReciveBuf(makeMsgForm(fd) + " " + command + " " + channelName + " :" + message + "\r\n");
+	// 	std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
+	// 	// prefix = (":" + client->getNickname() + "!" + client->getUsername() + "@" + client->getServername());
+	// 	// <message>  ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
+	// 	// == " : name ! user @ host PRIVMSG #channel : message \r\n"
+	// 	// 2.3.1 Message format in 'pseudo' BNF -> [page 8]
+	// 	fd_iter++;
+	// }
 	while (fd_iter != fdList.end())
 	{
 		std::cout << "#fd_iter : " << *fd_iter << std::endl;
@@ -58,14 +83,29 @@ void Command::messageAllChannel(int fd, std::string channelName, std::string com
 			fd_iter++;
 			continue ;
 		}
-		std::cout << "#targetClient.getNickname() : " << targetClient.getNickname() << std::endl;
-		targetClient.appendReciveBuf(makeMsgForm(fd) + " " + command + " " + channelName + " :" + message + "\r\n");
-		std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
-		// prefix = (":" + client->getNickname() + "!" + client->getUsername() + "@" + client->getServername());
-		// <message>  ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
-		// == " : name ! user @ host PRIVMSG #channel : message \r\n"
-		// 2.3.1 Message format in 'pseudo' BNF -> [page 8]
-		fd_iter++;
+	
+		if (command == "PRIVMSG" || command == "JOIN" || command == "PART" || command == "KICK" || command == "TOPIC")
+		{	// "#채널" 있을 때 == channelName + " :"
+			std::cout << "#targetClient.getNickname() : " << targetClient.getNickname() << std::endl;
+			targetClient.appendReciveBuf(makeMsgForm(fd, command) + " " + command + " " + channelName + " :" + message + "\r\n");
+			std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
+			// prefix = (":" + client->getNickname() + "!" + client->getUsername() + "@" + client->getServername());
+			// <message>  ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
+			// == " : name ! user @ host PRIVMSG #channel : message \r\n"
+			// 2.3.1 Message format in 'pseudo' BNF -> [page 8]
+			fd_iter++;
+		}
+		else
+		{	// "#채널" 없을 때 == command + " :" 
+			std::cout << "#targetClient.getNickname() : " << targetClient.getNickname() << std::endl;
+			targetClient.appendReciveBuf(makeMsgForm(fd, command) + " " + command + " :" + message + "\r\n");
+			std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
+			// prefix = (":" + client->getNickname() + "!" + client->getUsername() + "@" + client->getServername());
+			// <message>  ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
+			// == " : name ! user @ host PRIVMSG #channel : message \r\n"
+			// 2.3.1 Message format in 'pseudo' BNF -> [page 8]
+			fd_iter++;
+		}
 	}
 }
 

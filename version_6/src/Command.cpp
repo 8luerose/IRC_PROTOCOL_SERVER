@@ -43,6 +43,7 @@ void Command::run(int fd)
         irssiSignUp(fd, irssiTest);
 	else
 	{	// irssi가 아닌 경우
+		std::cout << "#serverMsg" << serverMsg.str() << std::endl;
 		while (getline(serverMsg, cmdBuffer, ' '))	// 명령어 파싱
 		{
 			size_t pos = cmdBuffer.find_last_not_of("\r\n");
@@ -58,8 +59,10 @@ void Command::run(int fd)
 			}
 			cmdVector.push_back(command);
 		}
-		printCmdVector(cmdVector);
 	}
+	// 태현 추가
+	std::cout << "#printCmdVector" << std::endl;
+	printCmdVector(cmdVector);
 	iter = clientList.find(fd);
 	if (iter == clientList.end())
 		return ;

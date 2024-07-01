@@ -64,8 +64,10 @@ void Command::nick(int fd, std::vector<std::string> cmdVector)
 		channelIter++;
 	}
 
+	// iter->second.appendReciveBuf(":" + iter->second.getNickname() + " NICK " + iter->second.getNickname() + "\r\n");
+	// iter->second.appendReciveBuf(":" + cmdVector[1] + " NICK " + iter->second.getNickname() + "\r\n");
+	iter->second.appendReciveBuf(":" + iter->second.getNickname() + " NICK " + cmdVector[1] + "\r\n");
 	iter->second.setNickname(cmdVector[1]);	// iter == clientList의 iter
-	iter->second.appendReciveBuf(":" + iter->second.getNickname() + " NICK " + iter->second.getNickname() + "\r\n");
 	iter->second.setRegiNick(true);
 }
 

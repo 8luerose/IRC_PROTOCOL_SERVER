@@ -21,5 +21,6 @@ void Command::ping(int fd, std::vector<std::string> cmdVector)
 		return;
 	}
 
-	clientIt->second.appendReciveBuf("PONG " + cmdVector[1] + "\r\n");
+	// clientIt->second.appendReciveBuf("PONG " + cmdVector[1] + "\r\n");
+	clientIt->second.appendReciveBuf(":" + clientIt->second.getServername() + " PONG " + cmdVector[1] + "\r\n");
 }

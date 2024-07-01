@@ -95,6 +95,7 @@ void Server::execute()
 	{
 		_eventCnt = kevent(_kq, &_changeList[0], _changeList.size(), _eventList, 256, NULL);
 		std::cout << "#kevent 실행" << std::endl;
+		std::cout << "#내 아이피: 10.19.209.196" << std::endl;
 		// Kq를 통해 생성된 이벤트 큐(kevent)를 식별할 것이고,
 		// changeList에 있는 이벤트들을 _changeList.size()만큼 감시하고,
 		// 실제로 이벤트가 발생한 것이 있으면, eventList[256]에 이벤트들을 저장한다 ->
