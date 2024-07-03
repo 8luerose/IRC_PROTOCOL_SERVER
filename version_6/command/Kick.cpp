@@ -101,6 +101,7 @@ void Command::kick(int fd, std::vector<std::string> cmdVector)
 
 					messageAllChannel(fd, *channel_iter, "KICK", message);		// 채널에 있는 모든 클라이언트에게 메시지 전송
 					channel->removeFdListClient(target->second.getClientFd());	// '채널이 갖고 있는' 클라이언트 리스트에서 해당 nickname 클라이언트 제거
+					channel->removeOperatorFd(target->second.getClientFd());	// '채널이 갖고 있는' 클라이언트 리스트에서 해당 nickname 클라이언트 제거
 					target->second.deleteChannel(*channel_iter);				// '클라이언트가 갖고 있는' std::vector<std::string> _channelList; 에서 해당 채널 '_channelList.erase(iter);'
 				}
 			}

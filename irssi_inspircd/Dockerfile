@@ -10,7 +10,8 @@ RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://mirror.kakao.com/ubuntu/|
 # Update package list and install necessary packages
 RUN apt-get update && \
     apt-get install -y sudo tzdata && \
-	sudo apt-get install -y tcpflow
+	sudo apt-get install -y tcpflow && \
+	sudo apt-get install -y netcat-openbsd
 
 RUN echo "taehkwon: 'sudo', 'tzdata' Done" && \
 	echo "taehkwon: Waiting.. install (1)inspircd and (2)irssi"

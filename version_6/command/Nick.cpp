@@ -9,6 +9,7 @@ void Command::nick(int fd, std::vector<std::string> cmdVector)
 	std::vector<std::string> channelList;
 	std::vector<std::string>::iterator channelIter;
 
+	// ==== 인가 확인 작업 ====
 	iter = clientList.find(fd);
 	if (!(iter->second.getRegiPass()))	// Client가 pass 인증이 안되어있으면
 	{
@@ -44,12 +45,15 @@ void Command::nick(int fd, std::vector<std::string> cmdVector)
 		return;
 	}
 	
-	// if (nicknameDuplicate(cmdVector[1], clientList) == false)
-	// {
-	// 	ERROR_nicknameinuse_433(iter->second);
-	// 	return;
-	// }
+	if (nicknameDuplicate(cmdVector[1], clientList) == false)
+	{
+		ERROR_nicknameinuse_433(iter->second);
+		return;
+	}
+	// ==== 통과 ====
 
+	// ==== 닉네임 변경 로직 ====
+	std::string oldNick = iter->second.getNickname();
 	channelList = iter->second.getChannelList();
 	channelIter = channelList.begin();
 	while (channelIter != channelList.end())
@@ -59,15 +63,15 @@ void Command::nick(int fd, std::vector<std::string> cmdVector)
 			// if (channel->getChannelName() != "")
 			// 	messageAllChannel(fd, channel->getChannelName(), "NICK", iter->second.getNickname() + " " + cmdVector[1]);
 			if (channel != NULL)
-				messageAllChannel(fd, channel->getChannelName(), "NICK", iter->second.getNickname() + " " + cmdVector[1]);
+				messageAllChannel(fd, channel->getChannelName(), "NICK", oldNick + " " + cmdVector[1]);
 		}	// '}' 스코프 작성 시, Channel() 임의 객체를 스코프 범위내에서 생성 후 소멸시킴
 		channelIter++;
 	}
 
 	// iter->second.appendReciveBuf(":" + iter->second.getNickname() + " NICK " + iter->second.getNickname() + "\r\n");
 	// iter->second.appendReciveBuf(":" + cmdVector[1] + " NICK " + iter->second.getNickname() + "\r\n");
-	iter->second.appendReciveBuf(":" + iter->second.getNickname() + " NICK " + cmdVector[1] + "\r\n");
 	iter->second.setNickname(cmdVector[1]);	// iter == clientList의 iter
+	iter->second.appendReciveBuf(":" + oldNick + " NICK " + iter->second.getNickname() + "\r\n");
 	iter->second.setRegiNick(true);
 }
 
@@ -96,13 +100,13 @@ bool Command::nicknameDuplicate(std::string nickname, std::map<int, Client>& cli
 	{
 		if (iter->second.getNickname() == nickname)
 			return (false);
-		for (size_t i = 0; i < nickname.length(); i++)
-		{
-			if (std::toupper(iter->second.getNickname()[i]) != std::toupper(nickname[i]))
-				return (false);
-		}
+		// for (size_t i = 0; i < nickname.length(); i++)
+		// {
+		// 	if (std::toupper(iter->second.getNickname()[i]) != std::toupper(nickname[i]))
+		// 		return (false);
+		// }
 		iter++;
 	}
 	return (true);
-	std::cout << "#nick완료" << std::endl;
+	std::cout << "#nick중복" << std::endl;
 }

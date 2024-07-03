@@ -35,7 +35,8 @@ void Command::quit(int fd, std::vector<std::string> cmdVector)
 		messageAllChannel(fd, channel->getChannelName(), "QUIT", channelMessage(1, cmdVector));	// 채널에 메시지를 보냄 -> cmdVector[1]은 <message>
 		// ex) " : name ! user @ host QUIT #channel : message \r\n"
 		
-		if (channel->getFdListClient().size() == 1)					// 만약 채널에 남은 클라이언트가 1명이라면
+		// if (channel->getFdListClient().size() == 1)					// 만약 채널에 남은 클라이언트가 1명이라면
+		if (channel->getFdListClient().size() == 0)					// 만약 채널에 남은 클라이언트가 1명이라면
 		{
 			_server.removeChannel(channel->getChannelName());		// 서버's 채널 목록에서 <#채널이름> 해당 채널 제거
 			delete channel;											// 채널 메모리 해제

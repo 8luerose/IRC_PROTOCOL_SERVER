@@ -71,7 +71,7 @@ void Command::mode(int fd, std::vector<std::string> cmdVector)
 		return;
 	}
 
-	std::string modeArgv = cmdVector[2];	// ex) <+/- i, t, k, l, o>
+	// std::string modeArgv = cmdVector[2];	// ex) <+/- i, t, k, l, o>
 	std::string message = "";
     std::vector<std::string> modeValueList;	// <t,k,l,o 에 해당하는 values>
     unsigned int modeValueCnt = 3;
@@ -250,6 +250,8 @@ void Command::mode(int fd, std::vector<std::string> cmdVector)
                     channel->removeOperatorFd(target->second.getClientFd());
 					channel->setMode('o', sign, fd);
                     isSetMode = true;
+					modeValueList.push_back(cmdVector[modeValueCnt]);
+                    modeValueCnt++;
                 }
             }
         }
@@ -267,14 +269,26 @@ void Command::mode(int fd, std::vector<std::string> cmdVector)
     }
 
 
-	// 
-    for (size_t i = 0; i < modeValueList.size(); ++i)
-    {
-        message += " " + modeValueList[i];	// ex) "+l -k 2 key"
-    }
-	std::cout << "#message : " << message << std::endl;
-    if (message.empty())
-        return;
-	messageAllChannel(fd, cmdVector[1], "MODE", message);	// #채널에 MODE와 메세지 전달
+	
+	// 방장이 아닐 때 추가 인자 붙여주지 않는다 && 방장일 때 +kl 1234 2 추가 인자 붙여준다
+	if (channel->diffOperator(fd) == true)
+	{
+		for (size_t i = 0; i < modeValueList.size(); ++i)
+		{
+			if (!modeValueList[i].empty())			// 비어있지 않을 때
+				message += " " + modeValueList[i];	// ex) "+l -k 2 key"
+		}
+	}
+	if (message.empty())
+		return;
 
+    // for (size_t i = 0; i < modeValueList.size(); ++i)
+    // {
+	// 	if (!modeValueList[i].empty())
+    //     	message += " " + modeValueList[i];	// ex) "+l -k 2 key"
+    // }
+	// std::cout << "#message : " << message << std::endl;
+    // if (message.empty())
+    //     return;
+	messageAllChannel(fd, cmdVector[1], "MODE", message);	// #채널에 MODE와 메세지 전달
 }
