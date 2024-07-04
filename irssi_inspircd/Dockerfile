@@ -11,7 +11,8 @@ RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://mirror.kakao.com/ubuntu/|
 RUN apt-get update && \
     apt-get install -y sudo tzdata && \
 	sudo apt-get install -y tcpflow && \
-	sudo apt-get install -y netcat-openbsd
+	sudo apt-get install -y netcat-openbsd && \
+	sudo apt-get install -y vim
 
 RUN echo "taehkwon: 'sudo', 'tzdata' Done" && \
 	echo "taehkwon: Waiting.. install (1)inspircd and (2)irssi"
@@ -22,6 +23,10 @@ RUN sudo apt-get install -y inspircd && \
     ln -fs /usr/share/zoneinfo/Asia/Seoul /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata && \
     sudo apt-get install -y irssi
+
+# Modify the inspircd.conf to change the timeout and pingfreq
+RUN sed -i 's/timeout="60"/timeout="86400"/g' /etc/inspircd/inspircd.conf && \
+    sed -i 's/pingfreq="120"/pingfreq="86400"/g' /etc/inspircd/inspircd.conf
 
 # Create required directory
 RUN sudo mkdir -p /var/run/inspircd

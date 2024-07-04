@@ -22,5 +22,9 @@ void Command::ping(int fd, std::vector<std::string> cmdVector)
 	}
 
 	// clientIt->second.appendReciveBuf("PONG " + cmdVector[1] + "\r\n");
-	clientIt->second.appendReciveBuf(":" + clientIt->second.getServername() + " PONG " + cmdVector[1] + "\r\n");
+	// clientIt->second.appendReciveBuf(":" + clientIt->second.getServername() + " PONG " + cmdVector[1] + "\r\n");
+	
+	// ping 12
+	// :irc.local PONG irc.local :12
+	clientIt->second.appendReciveBuf(":" + std::string(PREFIX_SERVERNAME) + " PONG " + std::string(PREFIX_SERVERNAME) + " :" + cmdVector[1] + "\r\n");
 }

@@ -58,20 +58,26 @@ void Command::nick(int fd, std::vector<std::string> cmdVector)
 	channelIter = channelList.begin();
 	while (channelIter != channelList.end())
 	{
-		{
-			Channel* channel = _server.findChannel(*channelIter);
-			// if (channel->getChannelName() != "")
-			// 	messageAllChannel(fd, channel->getChannelName(), "NICK", iter->second.getNickname() + " " + cmdVector[1]);
-			if (channel != NULL)
-				messageAllChannel(fd, channel->getChannelName(), "NICK", oldNick + " " + cmdVector[1]);
-		}	// '}' 스코프 작성 시, Channel() 임의 객체를 스코프 범위내에서 생성 후 소멸시킴
+		
+		Channel* channel = _server.findChannel(*channelIter);
+		// if (channel->getChannelName() != "")
+		// 	messageAllChannel(fd, channel->getChannelName(), "NICK", iter->second.getNickname() + " " + cmdVector[1]);
+		//:player1!a@127.0.0.1 NICK :player11
+		if (channel != NULL)
+			messageAllChannel(fd, channel->getChannelName(), "NICK", cmdVector[1]);	
+			// messageAllChannel(fd, channel->getChannelName(), "NICK", oldNick + " " + cmdVector[1]);
+
+		// '}' 스코프 작성 시, Channel() 임의 객체를 스코프 범위내에서 생성 후 소멸시킴
 		channelIter++;
 	}
 
 	// iter->second.appendReciveBuf(":" + iter->second.getNickname() + " NICK " + iter->second.getNickname() + "\r\n");
 	// iter->second.appendReciveBuf(":" + cmdVector[1] + " NICK " + iter->second.getNickname() + "\r\n");
 	iter->second.setNickname(cmdVector[1]);	// iter == clientList의 iter
-	iter->second.appendReciveBuf(":" + oldNick + " NICK " + iter->second.getNickname() + "\r\n");
+	// iter->second.appendReciveBuf(":" + oldNick + " NICK " + iter->second.getNickname() + "\r\n");
+	
+	// 보류
+	// iter->second.appendReciveBuf(":" + oldNick + " NICK " + iter->second.getNickname() + "\r\n");
 	iter->second.setRegiNick(true);
 }
 

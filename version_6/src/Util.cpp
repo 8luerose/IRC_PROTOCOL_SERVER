@@ -32,9 +32,9 @@ std::string Command::makeMsgForm(int fd, std::string command)
 	Client &client = iter->second;
 	std::string prefix;
 
-	std::string PREFIX_SERVERNAME = "localhost.42seoul.kr";
+	// std::string PREFIX_SERVERNAME = "localhost.42seoul.kr";
 	
-	if (command == "PRIVMSG" || command == "JOIN" || command == "QUIT" || command == "PART")
+	if (command == "PRIVMSG" || command == "JOIN" || command == "QUIT" || command == "PART" || command == "NICK" || command == "MODE" || command == "KICK")
 	{	// 클라이언트 -> 클라이언트 == ex) :yournick!user@host
 		prefix = (":" + client.getNickname() + "!" + client.getUsername() + "@" + client.getServername());
 		// <prefix>   ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
@@ -46,7 +46,8 @@ std::string Command::makeMsgForm(int fd, std::string command)
 	else
 	{	// 서버 -> 서버 == ex) :servername
 		// prefix = (":" + client.getServername());
-		prefix = (":" + PREFIX_SERVERNAME);
+		// prefix = (":" + PREFIX_SERVERNAME);
+		prefix = (":" + std::string(PREFIX_SERVERNAME));
 	}
 	return (prefix);
 }
@@ -73,16 +74,60 @@ void Command::messageAllChannel(int fd, std::string channelName, std::string com
 			continue ;
 		}
 	
-		if (command == "PRIVMSG" || command == "JOIN" || command == "MODE" || command == "PART" || command == "KICK" || command == "TOPIC")
+		if (command == "PRIVMSG" || command == "JOIN" || command == "TOPIC")
 		{	// "#채널" 있을 때 == channelName + " :"
 			std::cout << "#targetClient.getNickname() : " << targetClient.getNickname() << std::endl;
 			targetClient.appendReciveBuf(makeMsgForm(fd, command) + " " + command + " " + channelName + " :" + message + "\r\n");
+			
+			// :player1!a@127.0.0.1 JOIN :#gen 이므로
+			// targetClient.appendReciveBuf(makeMsgForm(fd, command) + " " + command + " :" + channelName + message + "\r\n");
+			
 			std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
 			// prefix = (":" + client->getNickname() + "!" + client->getUsername() + "@" + client->getServername());
 			// <message>  ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
 			// == " : name ! user @ host PRIVMSG #channel : message \r\n"
 			// 2.3.1 Message format in 'pseudo' BNF -> [page 8]
 			fd_iter++;
+		}
+		else if (command == "MODE")
+		{
+			std::cout << "#targetClient.getNickname() : " << targetClient.getNickname() << std::endl;
+			targetClient.appendReciveBuf(makeMsgForm(fd, command) + " " + command + " " + channelName + " " + message + " :" + "\r\n");
+			std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
+			fd_iter++;
+		}
+		else if (command == "KICK")
+		{
+			std::cout << "#targetClient.getNickname() : " << targetClient.getNickname() << std::endl;
+			// ::a!a@127.0.0.1 KICK #gen b :a
+			// :a!a@127.0.0.1 KICK #gen b :a
+			// targetClient.appendReciveBuf(makeMsgForm(fd, command) + " " + command + " " + channelName + " " + _server.getClientList().find(fd)->second.getNickname() + " :" + message + "\r\n");
+			targetClient.appendReciveBuf(makeMsgForm(fd, command) + " " + command + " " + channelName + " " + message + " :" + _server.getClientList().find(fd)->second.getNickname() + "\r\n");
+			std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
+			fd_iter++;
+		}
+		else if (command == "PART")
+		{
+			if (message == "NO REASON")
+			{
+				std::cout << "#message - NO : " << message << std::endl;
+				// 이유 없을 때: part #gen
+				// :b!b@127.0.0.1 PART :#gen
+				std::cout << "#targetClient.getNickname() : " << targetClient.getNickname() << std::endl;
+				targetClient.appendReciveBuf(makeMsgForm(fd, command) + " " + command + " :" + channelName + "\r\n");
+				std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
+				fd_iter++;
+			}
+			else
+			{
+				std::cout << "#message - OK : " << message << std::endl;
+				// 이유 있을 때: part #gen 1234
+				// :b!b@127.0.0.1 PART #gen :1234
+				std::cout << "#targetClient.getNickname() : " << targetClient.getNickname() << std::endl;
+				targetClient.appendReciveBuf(makeMsgForm(fd, command) + " " + command + " " + channelName + " :" + message + "\r\n");
+				std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
+				fd_iter++;
+			}
 		}
 		else
 		{	// "#채널" 없을 때 == command + " :" 
@@ -165,9 +210,12 @@ void Command::nameListMsg(int fd, std::string channelName)
 		iter++;
 	}
 	Client &client = _server.getClientList().find(fd)->second;						// 명령어 사용하려는 fd 클라이언트에게
-	client.appendReciveBuf("353 " + client.getNickname() + " = " + channelName + " :" + message + "\r\n");	// 채널의 클라이언트 리스트 (== mesaage) 주고
+	// client.appendReciveBuf("353 " + client.getNickname() + " = " + channelName + " :" + message + "\r\n");	// 채널의 클라이언트 리스트 (== mesaage) 주고
+	// :irc.local 353 player1 = #gen :@player1 이므로
+	client.appendReciveBuf(":" + std::string(PREFIX_SERVERNAME) + " 353 " + client.getNickname() + " = " + channelName + " :" + message + "\r\n");	// 채널의 클라이언트 리스트 (== mesaage) 주고
 	// 353 <nickname> = #channel :@nickname nickname nickname nickname
-	client.appendReciveBuf("366 " + client.getNickname() + " " + channelName + " :End of NAMES list.\r\n");	// 끝내기
+	// client.appendReciveBuf("366 " + client.getNickname() + " " + channelName + " :End of NAMES list.\r\n");	// 끝내기
+	client.appendReciveBuf(":" + std::string(PREFIX_SERVERNAME) + " 366 " + client.getNickname() + " " + channelName + " :End of /NAMES list.\r\n");	// 끝내기
 	// 366 <nickname> #channel :End of NAMES list.
 }
 

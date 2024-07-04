@@ -1,5 +1,7 @@
 {
 	"files.associations": {
+		"ostream": "cpp",
+		"string": "cpp",
 		"algorithm": "cpp",
 		"__bit_reference": "cpp",
 		"__hash_table": "cpp",
@@ -38,7 +40,6 @@
 		"mutex": "cpp",
 		"new": "cpp",
 		"optional": "cpp",
-		"ostream": "cpp",
 		"print": "cpp",
 		"queue": "cpp",
 		"ratio": "cpp",
@@ -46,7 +47,6 @@
 		"stack": "cpp",
 		"stdexcept": "cpp",
 		"streambuf": "cpp",
-		"string": "cpp",
 		"string_view": "cpp",
 		"tuple": "cpp",
 		"typeinfo": "cpp",

@@ -15,8 +15,18 @@ void Command::privmsg(int fd, std::vector<std::string> cmdVector)
 	{
 		if ((*msgArgv1Iter)[0] == '#' || (*msgArgv1Iter)[0] == '&') // 채널인 경우 :
 		{
-			// msgToChannel(msgArgv1Iter, cmdVector, client);
-			messageAllChannel(fd, *msgArgv1Iter, "PRIVMSG", channelMessage(2, cmdVector));
+			//채널인데, 내가 거기에 속해 있지 않은 경우 404 ERR
+			std::vector<std::string>::iterator channel_iter = client.findChannel(*msgArgv1Iter);
+			if (channel_iter == client.getChannelList().end())
+			{
+				ERROR_cantsendtochan_404(client, *msgArgv1Iter);
+				return;
+			}
+			else
+			{
+				messageAllChannel(fd, *msgArgv1Iter, "PRIVMSG", channelMessage(2, cmdVector));
+			}
+
 		}
 		else
 		{
@@ -33,7 +43,7 @@ void Command::privmsg(int fd, std::vector<std::string> cmdVector)
 				// client_iter->second.appendReciveBuf(":" + client_iter->second.getNickname() + " PRIVMSG " + client.getNickname() + " :" + message + "\r\n");
 
 				// 태현 추가
-				client_iter->second.appendReciveBuf("PRIVMSG " + makeMsgForm(fd, cmdVector[0]) + " :" + message + "\r\n");
+				client_iter->second.appendReciveBuf(makeMsgForm(fd, cmdVector[0]) + " PRIVMSG " + client.getNickname() + " :" + message + "\r\n");
 			}
 			// 클라이언트가 존재하지 않는 경우
 			else

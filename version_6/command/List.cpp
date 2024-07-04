@@ -25,7 +25,8 @@ void Command::list(int fd, std::vector<std::string> cmdVector)
 	std::cout << std::endl;
 
     // RPL_LISTSTART (321)
-    client.appendReciveBuf("321 " + client.getNickname() + " Channel :Users Name\r\n");
+    // client.appendReciveBuf("321 " + client.getNickname() + " Channel :Users Name\r\n");
+	client.appendReciveBuf(":" + std::string(PREFIX_SERVERNAME) + " 321 " + client.getNickname() + " Channel :Users Name\r\n");
 
 
 	// // "list -yes" 일 경우
@@ -58,7 +59,8 @@ void Command::list(int fd, std::vector<std::string> cmdVector)
 				Channel* channel = channelIt->second;
 				std::string channelName = channel->getChannelName();
 				std::string topic = channel->getTopic();
-				client.appendReciveBuf("322 " + client.getNickname() + " " + channelName + " " + intToString(channel->getFdListClient().size()) + " :" + topic + "\r\n");
+				// client.appendReciveBuf("322 " + client.getNickname() + " " + channelName + " " + intToString(channel->getFdListClient().size()) + " :" + topic + "\r\n");
+				client.appendReciveBuf(":" + std::string(PREFIX_SERVERNAME) + " 322 " + client.getNickname() + " " + channelName + " " + intToString(channel->getFdListClient().size()) + " :" + "[+" + topic + "]" + "\r\n");
 				// ex) 322 닉네임 #channel 인원수 :토픽
 			}
 			it++;
@@ -74,13 +76,14 @@ void Command::list(int fd, std::vector<std::string> cmdVector)
 			Channel* channel = channelIt->second;
 			std::string channelName = channel->getChannelName();
 			std::string topic = channel->getTopic();
-			client.appendReciveBuf("322 " + client.getNickname() + " " + channelName + " " + intToString(channel->getFdListClient().size()) + " :" + topic + "\r\n");
+			client.appendReciveBuf(":" + std::string(PREFIX_SERVERNAME) + " 322 " + client.getNickname() + " " + channelName + " " + intToString(channel->getFdListClient().size()) + " :" + "[+" + topic + "]" + "\r\n");
 			channelIt++;
 		}
     }
 
     // RPL_LISTEND (323)
-    client.appendReciveBuf("323 " + client.getNickname() + " :End of /LIST\r\n");
+    // client.appendReciveBuf("323 " + client.getNickname() + " :End of /LIST\r\n");
+	client.appendReciveBuf(":" + std::string(PREFIX_SERVERNAME) + " 323 " + client.getNickname() + " :End of /LIST\r\n");
     send(fd, client.getReciveBuf().c_str(), client.getReciveBuf().length(), 0);
     client.clearReciveBuf();
 }

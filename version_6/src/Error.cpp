@@ -10,6 +10,11 @@ void ERROR_nosuchchannel_403(Client &client, std::string channel)
     client.appendReciveBuf("403 " + client.getNickname() + " " + channel + " :" + ERR_NOSUCHCHANNEL);
 }
 
+void ERROR_cantsendtochan_404(Client &client, std::string channel)
+{
+	client.appendReciveBuf("404 " + client.getNickname() + " " + channel + " :" + ERR_CANNOTSENDTOCHAN);
+}
+
 void ERROR_usernotinchannel_441(Client &client, std::string nickname, std::string channel)
 {
     client.appendReciveBuf("441 " + client.getNickname() + " " + nickname + " " + channel + " :" + ERR_USERNOTINCHANNEL);

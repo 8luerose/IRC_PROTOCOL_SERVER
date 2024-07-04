@@ -17,6 +17,7 @@
 // PRIVMSG and PART
 # define ERR_NOSUCHCHANNEL "No such channel\r\n"
 # define ERR_NOSUCHNICK "No such nick/channel\r\n"
+# define ERR_CANNOTSENDTOCHAN "Cannot send to channel\r\n"
 
 // PART
 # define ERR_NOTONCHANNEL "You're not on that channel\r\n"
@@ -52,6 +53,7 @@ class Client;
 
 void ERROR_nosuchnick_401(Client &, std::string);
 void ERROR_nosuchchannel_403(Client &, std::string);
+void ERROR_cantsendtochan_404(Client &, std::string);
 void ERROR_usernotinchannel_441(Client &, std::string, std::string);
 void ERROR_notonchannel_442(Client &, std::string);
 void ERROR_useronchannel_443(Client &, std::string, std::string);

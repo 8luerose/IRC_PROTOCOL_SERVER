@@ -8,6 +8,8 @@
 # include "../includes/Error.hpp"
 # include "../includes/Channel.hpp"
 
+#define PREFIX_SERVERNAME "localhost.42seoul.kr"
+
 class Client;
 class Server;
 class Channel;

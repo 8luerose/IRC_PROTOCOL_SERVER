@@ -70,12 +70,17 @@ void Command::topic(int fd, std::vector<std::string> cmdVector)
 
 		if (channel->getTopic().empty())
 		{	// 기존 Topic 없는 경우
-			_server.getClientList().find(fd)->second.appendReciveBuf("331 " + _server.getClientList().find(fd)->second.getNickname() + " " + cmdVector[1] + " :" + RPL_NOTOPIC + "\r\n");
+			// topic #gen
+			// :irc.local 331 a #gen :No topic is set.
+			_server.getClientList().find(fd)->second.appendReciveBuf(std::string(PREFIX_SERVERNAME) + " 331 " + _server.getClientList().find(fd)->second.getNickname() + " " + cmdVector[1] + " :" + RPL_NOTOPIC + "\r\n");
+
 			// RPL_NOTOPIC "No topic is set\r\n"
 			return ;
 		}
-		else	
-			_server.getClientList().find(fd)->second.appendReciveBuf("332 " + _server.getClientList().find(fd)->second.getNickname() + " " + cmdVector[1] + " :" + channel->getTopic() + "\r\n");
+		else
+		{
+			_server.getClientList().find(fd)->second.appendReciveBuf(std::string(PREFIX_SERVERNAME) + " 332 " + _server.getClientList().find(fd)->second.getNickname() + " " + cmdVector[1] + " :" + channel->getTopic() + "\r\n");
+		}	
 	}
 	else
 	{	// TOPIC <channel> <topic> 입력된 경우 -> Topic 변경

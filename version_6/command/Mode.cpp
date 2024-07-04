@@ -41,17 +41,29 @@ void Command::mode(int fd, std::vector<std::string> cmdVector)
 	{	// /Mode 인자인 '#channel'을 서버에 저장된 채널 리스트에서 찾았고!
 		// and, "/Mode #channel" 입력됐을 때
         std::string modeParams = "";
+		std::string limitValue = "";
 		if (channel->getMode().find('t') != std::string::npos)
-			modeParams += " " + channel->getTopic();
+			modeParams += channel->getTopic() + " ";
         if (channel->getMode().find('k') != std::string::npos)
-            modeParams += " " + channel->getKey();
+		{
+			if (channel->diffOperator(fd))	// 오퍼레이터일 때
+				modeParams += channel->getKey() + " ";
+			else							// 오퍼레이터가 아닐 때 -> 키 조회 불가
+				modeParams += "<key> ";
+		}
         if (channel->getMode().find('l') != std::string::npos)
 		{
 			std::ostringstream oss;	// ostringstream은 output stream의 약자로, 문자열을 출력하기 위한 스트림
             oss << channel->getLimit();
-            modeParams += " " + oss.str();
+            // modeParams += oss.str() + " ";
+			limitValue += oss.str();
 		}			
-		client.appendReciveBuf("324 " + argvChannelName + " +" + channel->getMode() + modeParams + "\r\n");
+		// client.appendReciveBuf("324 " + argvChannelName + " +" + channel->getMode() + modeParams + "\r\n");
+		// :irc.local 324 player1 #gen :+nt 이므로
+		if (modeParams.empty() && limitValue.empty())	// 토픽, 키, limit '없을 때'
+			client.appendReciveBuf(":" + std::string(PREFIX_SERVERNAME) + " 324 " + client.getNickname() + " " + argvChannelName + " :+" + channel->getMode() + "\r\n");
+		else											// 토픽, 키, limit '있을 떄'
+			client.appendReciveBuf(":" + std::string(PREFIX_SERVERNAME) + " 324 " + client.getNickname() + " " + argvChannelName + " +" + channel->getMode() + " " + modeParams + ":" + limitValue + "\r\n");
         return;
 		// == "<channel> <mode> <mode params>"
 		// == ex) 324 #channel +kt secret
@@ -246,6 +258,12 @@ void Command::mode(int fd, std::vector<std::string> cmdVector)
                 }
                 else if (sign == '-')
                 {
+					// 만약 오퍼레이터가 아닌데, -o를 하려고 하면 482 에러
+					if (!channel->diffOperator(fd))
+					{
+						ERROR_chanoprivsneeded_482(client, argvChannelName);
+						return;
+					}
 					// std::cout << "#오퍼레이터 해제 : " << std::endl;
                     channel->removeOperatorFd(target->second.getClientFd());
 					channel->setMode('o', sign, fd);
