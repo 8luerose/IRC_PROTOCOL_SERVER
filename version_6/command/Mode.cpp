@@ -43,7 +43,13 @@ void Command::mode(int fd, std::vector<std::string> cmdVector)
         std::string modeParams = "";
 		std::string limitValue = "";
 		if (channel->getMode().find('t') != std::string::npos)
-			modeParams += channel->getTopic() + " ";
+		{
+			// 기존
+			// modeParams += channel->getTopic() + " ";
+
+			// 수정 - topic일 때 안붙음
+			modeParams += "";
+		}
         if (channel->getMode().find('k') != std::string::npos)
 		{
 			if (channel->diffOperator(fd))	// 오퍼레이터일 때
@@ -85,6 +91,7 @@ void Command::mode(int fd, std::vector<std::string> cmdVector)
 
 	// std::string modeArgv = cmdVector[2];	// ex) <+/- i, t, k, l, o>
 	std::string message = "";
+	std::string plus_message = "";
     std::vector<std::string> modeValueList;	// <t,k,l,o 에 해당하는 values>
     unsigned int modeValueCnt = 3;
 	// "/Mode #channel +i <modeValueList>" 이므로 Value는 4부터 시작이므로, 3으로 초기화 해서, Value 만나면 그때서야 확신 갖고 ++증가
@@ -250,10 +257,17 @@ void Command::mode(int fd, std::vector<std::string> cmdVector)
                 else if (sign == '+')
                 {
 					// std::cout << "#오퍼레이터 설정 : " << cmdVector[modeValueCnt] << std::endl;
-                    channel->addOperatorFd(target->second.getClientFd());
-					channel->setMode('o', sign, fd);
+					std::cout << "#타켓 fd : " << target->second.getClientFd() << std::endl;
+					plus_message = target->second.getNickname();
+					std::cout << "#타겟 닉네임 :[nickname] " << target->second.getNickname() << std::endl;
+                    // channel->addOperatorFd(target->second.getClientFd());  -> setMode(, ,타겟 fd)
+					channel->setMode('o', sign, target->second.getClientFd());
+					if (channel->diffOperator(target->second.getClientFd()))
+						std::cout << "#오퍼레이터 추가 완료" << std::endl;
+					else
+						std::cout << "#오퍼레이터 추가 실패" << std::endl;
                     isSetMode = true;
-                    modeValueList.push_back(cmdVector[modeValueCnt]);
+                    // modeValueList.push_back(cmdVector[modeValueCnt]);
                     modeValueCnt++;
                 }
                 else if (sign == '-')
@@ -264,11 +278,21 @@ void Command::mode(int fd, std::vector<std::string> cmdVector)
 						ERROR_chanoprivsneeded_482(client, argvChannelName);
 						return;
 					}
-					// std::cout << "#오퍼레이터 해제 : " << std::endl;
-                    channel->removeOperatorFd(target->second.getClientFd());
-					channel->setMode('o', sign, fd);
+					std::cout << "#타켓 fd : " << target->second.getClientFd() << std::endl;
+					plus_message = target->second.getNickname();
+					std::cout << "#타겟 닉네임 :[nickname] " << target->second.getNickname() << std::endl;
+                    // channel->removeOperatorFd(target->second.getClientFd()); -> setMode(, ,타겟 fd)
+					channel->setMode('o', sign, target->second.getClientFd());
+					if (channel->diffOperator(target->second.getClientFd()))
+						std::cout << "#타겟 오퍼레이터 삭제 안 됨" << std::endl;
+					else
+						std::cout << "#타겟 오퍼레이터 삭제 됨" << std::endl;
+					if (channel->diffOperator(fd))
+						std::cout << "#방장 권한 유지" << std::endl;
+					else
+						std::cout << "#방장 권한 삭제됨" << std::endl;
                     isSetMode = true;
-					modeValueList.push_back(cmdVector[modeValueCnt]);
+					// modeValueList.push_back(cmdVector[modeValueCnt]);
                     modeValueCnt++;
                 }
             }
@@ -308,5 +332,6 @@ void Command::mode(int fd, std::vector<std::string> cmdVector)
 	// std::cout << "#message : " << message << std::endl;
     // if (message.empty())
     //     return;
-	messageAllChannel(fd, cmdVector[1], "MODE", message);	// #채널에 MODE와 메세지 전달
+	// messageAllChannel(fd, cmdVector[1], "MODE", message);	// #채널에 MODE와 메세지 전달
+	plus_messageAllChannel(fd, cmdVector[1], "MODE", message, plus_message);	// #채널에 MODE와 메세지 전달
 }

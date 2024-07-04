@@ -11,7 +11,7 @@ sleep 20
 echo "\ntaehkwon: Done!\n"
 
 echo "taehkwon: Starting tcpflow to capture IRC traffic on port 6667...\n"
-sudo tcpflow -i lo port 4000 -c &
+sudo tcpflow -i lo port 6667 -c &
 
 # irssi -c 127.0.0.1 -p 6667 -n taehkwon
 # docker exec -it irc /bin/bash

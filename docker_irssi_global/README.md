@@ -23,24 +23,19 @@
 1. 1번 탭: `docker logs -f irc`를 입력하여 서버 로그를 확인합니다.
 2. 2번 탭:
    - `docker exec -it irc /bin/bash`를 입력하여 root 계정으로 접속합니다.
-   - `irssi` 명령어를 사용하여 irssi에 접속합니다.
-   - '/connect {hostip} 4000 1234' 명령어를 사용하여 서버에 연결합니다.
-		- ifconfig -> en0 -> inet -> {ex) hostip == 192.168.0.71} 으로 확인가능
+   - `irssi -c 127.0.0.1 -p 6667 -n taehkwon` 명령어를 사용하여 irssi에 접속합니다.
    - `/NICK player1`을 입력하여 닉네임을 설정합니다.
    - `/JOIN #general`을 입력하여 채널에 입장합니다.
 3. 3번 탭:
    - (2번 탭과 동일)
    - `docker exec -it irc /bin/bash`를 입력하여 root 계정으로 접속합니다.
-   - `irssi` 명령어를 사용하여 irssi에 접속합니다.
-   - '/connect {hostip} 4000 1234' 명령어를 사용하여 서버에 연결합니다.
-    	- ifconfig -> en0 -> inet -> {ex) hostip == 192.168.0.71} 으로 확인가능
+   - `irssi -c 127.0.0.1 -p 6667 -n taehkwon` 명령어를 사용하여 irssi에 접속합니다.
    - `/NICK player2`를 입력하여 닉네임을 설정합니다.
    - `/JOIN #general`을 입력하여 채널에 입장합니다.
 
 ### 채팅
   - 2번 탭과 3번 탭에서 채팅 메시지를 입력하여 서로 대화할 수 있습니다.
   - ex) "hello" 입력 시, 다른 사용자에게 "player1: hello" 또는 "player2: hello" 메시지가 전송됩니다.
-  - nc에서는 PRIVMSG #general :hello로 입력하는 것과 같습니다.
 
 ## Makefile 사용법
   - `make all`: 컨테이너를 빌드하고 실행합니다.

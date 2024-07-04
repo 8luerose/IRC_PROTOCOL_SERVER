@@ -75,6 +75,9 @@ void Command::nick(int fd, std::vector<std::string> cmdVector)
 	// iter->second.appendReciveBuf(":" + cmdVector[1] + " NICK " + iter->second.getNickname() + "\r\n");
 	iter->second.setNickname(cmdVector[1]);	// iter == clientList의 iter
 	// iter->second.appendReciveBuf(":" + oldNick + " NICK " + iter->second.getNickname() + "\r\n");
+	std::string prefix;
+	prefix = (":" + oldNick + "!" + iter->second.getUsername() + "@" + iter->second.getServername());
+	iter->second.appendReciveBuf(prefix + " " + cmdVector[0] + " :" + cmdVector[1] + "\r\n");
 	
 	// 보류
 	// iter->second.appendReciveBuf(":" + oldNick + " NICK " + iter->second.getNickname() + "\r\n");

@@ -67,6 +67,7 @@ class Command
 		// std::string					makeMsgForm(int);
 		std::string					makeMsgForm(int, std::string);
 		void						messageAllChannel(int, std::string, std::string, std::string);
+		void 						plus_messageAllChannel(int, std::string, std::string, std::string, std::string);
 };
 
 #endif

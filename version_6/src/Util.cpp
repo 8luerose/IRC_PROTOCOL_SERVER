@@ -89,13 +89,6 @@ void Command::messageAllChannel(int fd, std::string channelName, std::string com
 			// 2.3.1 Message format in 'pseudo' BNF -> [page 8]
 			fd_iter++;
 		}
-		else if (command == "MODE")
-		{
-			std::cout << "#targetClient.getNickname() : " << targetClient.getNickname() << std::endl;
-			targetClient.appendReciveBuf(makeMsgForm(fd, command) + " " + command + " " + channelName + " " + message + " :" + "\r\n");
-			std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
-			fd_iter++;
-		}
 		else if (command == "KICK")
 		{
 			std::cout << "#targetClient.getNickname() : " << targetClient.getNickname() << std::endl;
@@ -128,6 +121,47 @@ void Command::messageAllChannel(int fd, std::string channelName, std::string com
 				std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
 				fd_iter++;
 			}
+		}
+		else
+		{	// "#채널" 없을 때 == command + " :" 
+			std::cout << "#targetClient.getNickname() : " << targetClient.getNickname() << std::endl;
+			targetClient.appendReciveBuf(makeMsgForm(fd, command) + " " + command + " :" + message + "\r\n");
+			std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
+			// prefix = (":" + client->getNickname() + "!" + client->getUsername() + "@" + client->getServername());
+			// <message>  ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
+			// == " : name ! user @ host PRIVMSG #channel : message \r\n"
+			// 2.3.1 Message format in 'pseudo' BNF -> [page 8]
+			fd_iter++;
+		}
+	}
+}
+
+void Command::plus_messageAllChannel(int fd, std::string channelName, std::string command, std::string message, std::string plus_message)
+{	// 특정 명령어를 위한 함수: MODE
+	std::map<std::string, Channel*>& channelList = _server.getChannelList();
+
+	if (channelList.find(channelName) == channelList.end())
+		return ;
+	Channel *channel = channelList.find(channelName)->second;
+	std::vector<int> fdList = channel->getFdListClient();
+	std::vector<int>::iterator fd_iter = fdList.begin();
+
+	while (fd_iter != fdList.end())
+	{
+		std::cout << "#fd_iter : " << *fd_iter << std::endl;
+		Client& targetClient = _server.getClientList().find(*fd_iter)->second;
+		if ((fd == (*fd_iter)) && (command == "PRIVMSG")) // 자신에게는 보내지 않음
+		{
+			fd_iter++;
+			continue ;
+		}
+
+		if (command == "MODE")
+		{
+			std::cout << "#targetClient.getNickname() : " << targetClient.getNickname() << std::endl;
+			targetClient.appendReciveBuf(makeMsgForm(fd, command) + " " + command + " " + channelName + " " + message + " :" + plus_message + "\r\n");
+			std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
+			fd_iter++;
 		}
 		else
 		{	// "#채널" 없을 때 == command + " :" 

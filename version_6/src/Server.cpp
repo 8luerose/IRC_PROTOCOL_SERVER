@@ -28,6 +28,8 @@ void Server::setServerSock()
 {
 	int opiton = 1;
 	_serverSock = socket(PF_INET, SOCK_STREAM, 0);
+	std::cout << "#클러스터 아이피: 10.19.209.196" << std::endl;
+	std::cout << "#집 아이피: 192.168.0.71" << std::endl;
 	std::cout << "#1_socket 생성 : " << _serverSock << std::endl;
 	if (_serverSock == -1)
 		throw std::runtime_error("socket error");
@@ -96,6 +98,7 @@ void Server::execute()
 		_eventCnt = kevent(_kq, &_changeList[0], _changeList.size(), _eventList, 256, NULL);
 		std::cout << "#kevent 실행" << std::endl;
 		std::cout << "#내 아이피: 10.19.209.196" << std::endl;
+		std::cout << "#집 아이피: 192.168.0.71" << std::endl;
 		// Kq를 통해 생성된 이벤트 큐(kevent)를 식별할 것이고,
 		// changeList에 있는 이벤트들을 _changeList.size()만큼 감시하고,
 		// 실제로 이벤트가 발생한 것이 있으면, eventList[256]에 이벤트들을 저장한다 ->

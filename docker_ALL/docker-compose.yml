@@ -3,5 +3,5 @@ services:
     build: .
     container_name: irc
     ports:
-      - "4000:4000"
+      - "6667:6667"
     tty: true
