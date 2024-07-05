@@ -56,28 +56,43 @@ void Command::nick(int fd, std::vector<std::string> cmdVector)
 	std::string oldNick = iter->second.getNickname();
 	channelList = iter->second.getChannelList();
 	channelIter = channelList.begin();
-	while (channelIter != channelList.end())
-	{
-		
-		Channel* channel = _server.findChannel(*channelIter);
-		// if (channel->getChannelName() != "")
-		// 	messageAllChannel(fd, channel->getChannelName(), "NICK", iter->second.getNickname() + " " + cmdVector[1]);
-		//:player1!a@127.0.0.1 NICK :player11
-		if (channel != NULL)
-			messageAllChannel(fd, channel->getChannelName(), "NICK", cmdVector[1]);	
-			// messageAllChannel(fd, channel->getChannelName(), "NICK", oldNick + " " + cmdVector[1]);
+	_sendNickList.clear();
 
-		// '}' 스코프 작성 시, Channel() 임의 객체를 스코프 범위내에서 생성 후 소멸시킴
-		channelIter++;
+	if (channelList.size() == 0)		// 아무런 채널에 가입되어있지 않은 경우
+	{
+		// (2) 2번 추가되는 문제의심
+		std::string prefix;
+		prefix = (":" + oldNick + "!" + iter->second.getUsername() + "@" + iter->second.getServername());
+		iter->second.appendReciveBuf(prefix + " " + cmdVector[0] + " :" + cmdVector[1] + "\r\n");
 	}
+	else								// 채널에 1개 이상 가입되어 있는 경우
+	{
+		while (channelIter != channelList.end())
+		{
+			std::cout << "#채널 Iter 순회->" << std::endl;
+			Channel* channel = _server.findChannel(*channelIter);
+			// (1) 2번 추가되는 문제의심
+			if (channel != NULL)
+			{
+				messageAllChannel(fd, channel->getChannelName(), "NICK", cmdVector[1]);
+			}
+
+			// '}' 스코프 작성 시, Channel() 임의 객체를 스코프 범위내에서 생성 후 소멸시킴
+			channelIter++;
+		}
+	}
+
 
 	// iter->second.appendReciveBuf(":" + iter->second.getNickname() + " NICK " + iter->second.getNickname() + "\r\n");
 	// iter->second.appendReciveBuf(":" + cmdVector[1] + " NICK " + iter->second.getNickname() + "\r\n");
 	iter->second.setNickname(cmdVector[1]);	// iter == clientList의 iter
 	// iter->second.appendReciveBuf(":" + oldNick + " NICK " + iter->second.getNickname() + "\r\n");
-	std::string prefix;
-	prefix = (":" + oldNick + "!" + iter->second.getUsername() + "@" + iter->second.getServername());
-	iter->second.appendReciveBuf(prefix + " " + cmdVector[0] + " :" + cmdVector[1] + "\r\n");
+
+
+	// (2) 2번 추가되는 문제의심
+	// std::string prefix;
+	// prefix = (":" + oldNick + "!" + iter->second.getUsername() + "@" + iter->second.getServername());
+	// iter->second.appendReciveBuf(prefix + " " + cmdVector[0] + " :" + cmdVector[1] + "\r\n");
 	
 	// 보류
 	// iter->second.appendReciveBuf(":" + oldNick + " NICK " + iter->second.getNickname() + "\r\n");

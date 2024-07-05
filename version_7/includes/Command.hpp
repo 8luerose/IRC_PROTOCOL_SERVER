@@ -24,7 +24,9 @@ class Command
 		Command(const Command&);
 
 		/* member variables */
-		Server		&_server;
+		Server						&_server;
+		std::vector<int> 			_sendNickList;
+		std::vector<int>::iterator	_sendNickIter;
 
 	public:
 		/* OCCF */

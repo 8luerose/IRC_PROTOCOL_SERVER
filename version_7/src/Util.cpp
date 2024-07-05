@@ -61,10 +61,11 @@ void Command::messageAllChannel(int fd, std::string channelName, std::string com
 	if (channelList.find(channelName) == channelList.end())
 		return ;
 	Channel *channel = channelList.find(channelName)->second;
-	std::vector<int> fdList = channel->getFdListClient();
+	std::vector<int> fdList = channel->getFdListClient();		// #channelName에 있는 모든 fd 리스트
 	std::vector<int>::iterator fd_iter = fdList.begin();
 
-	while (fd_iter != fdList.end())
+
+	while (fd_iter != fdList.end())								// #channelName에 있는 fd 전부 순회
 	{
 		std::cout << "#fd_iter : " << *fd_iter << std::endl;
 		Client& targetClient = _server.getClientList().find(*fd_iter)->second;
@@ -121,6 +122,48 @@ void Command::messageAllChannel(int fd, std::string channelName, std::string com
 				std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
 				fd_iter++;
 			}
+		}
+		else if (command == "NICK")
+		{
+			_sendNickIter = _sendNickList.begin();
+			bool isSendNick = false;
+			// ==== nick 메세지 보냈는지 확인하는 인가 작업 ====
+			// 만약에 NICK 메세지를 보냈다면, 그 클라이언트(fd)에게는 보내지 않음
+			while (_sendNickIter != _sendNickList.end())
+			{
+				std::cout << "#nick 인가 검사 시작" << std::endl;
+				std::cout << "#_sendNickIter : " << *_sendNickIter << std::endl;
+				if (*_sendNickIter == targetClient.getClientFd())	// 만약에 nick 메세지를 이미 보냈던 클라이언트라면
+				{
+					std::cout << "#이미 nick 메세지 보낸 client | " << "채널이름: " << channelName << " | " << "클라이언트 이름: " << targetClient.getNickname() << std::endl;
+					_sendNickIter = _sendNickList.end();			// 반복문 종료
+					isSendNick = true;								// 이미 보냈음
+					fd_iter++;										// #채널 다음 사람으로 넘어가~ 지금 이 사람은 무시해~
+				}
+				else
+				{
+					std::cout << "#nick 메세지 보낸 client가 아님 | " << "채널이름: " << channelName << " | " << "클라이언트 이름: " << targetClient.getNickname() << std::endl;
+					_sendNickIter++;								// 계속 확인해
+				}
+			}
+			// ==== 통과 ====
+
+			if (isSendNick == true)	// 이미 보냈던 클라이언트라면
+			{
+				std::cout << "#인가 검사 통과 못함" << std::endl;
+				continue ;			// 다음 클라이언트로 넘어가~
+			}
+
+			std::cout << "#인가 검사 통과" << std::endl;
+			std::cout << "#targetClient.getNickname() : " << targetClient.getNickname() << std::endl;
+			targetClient.appendReciveBuf(makeMsgForm(fd, command) + " " + command + " :" + message + "\r\n");
+			std::cout << "#targetClient.getReciveBuf() : " << targetClient.getReciveBuf() << std::endl;
+			// std::cout << "#넣을게~ " << fd << std::endl;
+			std::cout << "#넣을게~ " << targetClient.getClientFd() << std::endl;
+			// _sendNickList.push_back(fd);							// nick 메세지 보낸 클라이언트는 보낸 리스트에 추가
+			_sendNickList.push_back(targetClient.getClientFd());	// nick 메세지 받은 클라이언트도 보낸 리스트에 추가
+			fd_iter++;
+			std::cout << "#nick 로직 끝" << std::endl;
 		}
 		else
 		{	// "#채널" 없을 때 == command + " :" 
