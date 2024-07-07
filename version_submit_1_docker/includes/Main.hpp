@@ -16,6 +16,7 @@
 # include <sstream>
 # include <algorithm>
 # include <cstddef>
+# include <cstring>
 
 # define BUF_SIZE 1024
 
