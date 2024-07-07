@@ -1,6 +1,9 @@
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
+# include <vector>
+# include <string>
+# include <algorithm>
 # include "../includes/Main.hpp"
 # include "../includes/Server.hpp"
 

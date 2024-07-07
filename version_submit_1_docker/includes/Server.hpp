@@ -1,12 +1,16 @@
 #ifndef SERVER_HPP
-#define SERVER_HPP
-#define BUF_SIZE 1024
-#define MAX_CONNECTION 5
+# define SERVER_HPP
+# define BUF_SIZE 1024
+# define MAX_CONNECTION 5
 
-#define READ 0
-#define WRITE 1
+# define READ 0
+# define WRITE 1
 
-#include "../includes/Main.hpp"
+# include <map>
+# include <string>
+# include <cstring>
+# include <unistd.h>
+# include "../includes/Main.hpp"
 
 class	Client;
 class	Channel;

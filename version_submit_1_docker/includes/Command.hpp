@@ -1,6 +1,11 @@
 #ifndef COMMAND_HPP
 # define COMMAND_HPP
 
+# include <algorithm>
+# include <unistd.h>
+# include <vector>
+# include <string>
+# include <map>
 # include "../includes/Main.hpp"
 # include "../includes/Client.hpp"
 # include "../includes/Server.hpp"

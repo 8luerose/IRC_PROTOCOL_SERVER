@@ -1,6 +1,9 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
+# include <string>
+# include <vector>
+# include <sstream>
 # include "Server.hpp"
 
 class Client
