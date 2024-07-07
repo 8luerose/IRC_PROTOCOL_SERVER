@@ -107,7 +107,7 @@ void Server::execute()
 			if (_curr_event->flags & EV_ERROR)
 			{
 				std::cerr << "EV_ERROR" << std::endl;
-				if (_curr_event->ident == static_cast<uintptr_t>(_serverSock))
+				if (static_cast<int>(_curr_event->ident) == (_serverSock))
 				{
 					closeClient();
 					close(_serverSock);
@@ -122,7 +122,7 @@ void Server::execute()
 			else if (_curr_event->filter == EVFILT_READ)
 			{
 				std::cout << "#READ EVENT 감지" << std::endl;
-				if (_curr_event->ident == static_cast<uintptr_t>(_serverSock))
+				if (static_cast<int>(_curr_event->ident) == (_serverSock))
 				{
 					std::cout << "#The first connect" << std::endl;
 					int clientSock;
