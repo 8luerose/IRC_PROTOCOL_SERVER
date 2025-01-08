@@ -15,6 +15,27 @@ BSD 계열 시스템에서 사용되는 Kqueue는 이러한 I/O Multiplexing을 
 
 kqueue는 마치 카페의 주문 관리 시스템처럼 작동합니다. 새로운 고객(클라이언트)이 들어오면 주문(연결)을 받고, 각 고객의 요청(메시지)을 비동기적으로 처리합니다. kevent 함수는 바리스타가 주문을 처리하는 것처럼 클라이언트의 요청을 처리하며, 이 과정에서 서버는 다른 연결도 동시에 관리할 수 있습니다. 이러한 방식으로 단일 프로세스로도 수천 개의 동시 연결을 효율적으로 처리할 수 있게 됩니다.
 
+### Kqueue 란?
+kqueue는 BSD 계열에서 지원하는 Event 관리 system call로, Linux 계열에서 select를 개선한 epoll과 비슷하게 사용되고 동작합니다. 여러 fd를 모니터링하고, fd에 대한 동작(read, write)이 준비되었는지 알아내는데 사용되어 I/O Multiplexing을 이용하는 서버 프로그램을 작성하는데 사용됩니다.
+이러한 kqueue는 커널에 할당된 폴링 공간(kernel event queue - kqueue)에 모니터링할 이벤트를 등록하고, 발생한 이벤트를 return받아 Multiple I/O Event를 처리할 수 있도록 도와줍니다. 이벤트 등록 및 반환은 kevent 구조체를 통해 이루어지며, 구조체 필드로 존재하는 이벤트에 대한 필터, 플래그 등을 이용해 다양한 이벤트 발생 상황에 대한 정의 및 발생 이벤트에 대한 정보 확인을 할 수 있게 됩니다.
+
+
+## 채팅 서버 원리
+
+### 동기
+<img width="643" alt="image" src="https://github.com/user-attachments/assets/df301814-dc70-4d7e-be99-46a746f1677d" />
+
+### 비동기
+<img width="647" alt="image" src="https://github.com/user-attachments/assets/299ac814-8590-460c-8d9d-3668511e0ae3" />
+
+### I/O Multi-plexing
+<img width="580" alt="image" src="https://github.com/user-attachments/assets/6ff7d1d1-83d4-4c51-9027-84fc13d93ecd" />
+
+### 채팅 서버 개념도
+<img width="441" alt="image" src="https://github.com/user-attachments/assets/63234522-0db1-4c00-9c6b-88962c605f84" />
+
+
+
 
 
 ## 🌟 IRC와 I/O Multiplexing의 관계
@@ -128,7 +149,7 @@ struct kevent {
 예시: :nick!user@host PRIVMSG #channel :Hello, World!
 ```
 
-## 사용 가능한 IRC 명령어
+## 사용 가능한 IRC 명령어 (https://datatracker.ietf.org/doc/html/rfc1459 기반 구현)
   - `PASS`: 서버에 연결하기 위한 패스워드를 확인합니다.
   - `NICK`: 닉네임을 변경합니다.
   - `USER`: 유저 이름을 변경합니다.
