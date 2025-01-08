@@ -1,7 +1,0 @@
-services:
-  irc:
-    build: .
-    container_name: irc
-    ports:
-      - "6667:6667"
-    tty: true

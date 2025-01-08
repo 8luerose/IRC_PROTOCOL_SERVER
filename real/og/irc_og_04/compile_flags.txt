@@ -1,5 +1,0 @@
--xc++
--Wall
--Werror
--Wextra
--std=c++2a
